@@ -1,9 +1,6 @@
 #ifndef GAME_CONTROLLER_H
 #define GAME_CONTROLLER_H
 
-// // borrar
-#include <iostream>
-
 #include <vector>
 #include <set>
 
@@ -57,6 +54,11 @@ public:
     void updateCells();
 
     // Getters
+    int getBMin() const { return b_min; }
+    int getBMax() const { return b_max; }
+    int getSMin() const { return s_min; }
+    int getSMax() const { return s_max; }
+
     int getWidth() const { return width; }
     int getHeight() const { return height; }
     std::vector<std::vector<bool>> getSpace() const { return space; }
@@ -64,28 +66,16 @@ public:
     std::set<Cell> getLivingCells() const { return living_cells; }
 
     // Setters
+    void setBMin(int b_min) { this->b_min = b_min; }
+    void setBMax(int b_max) { this->b_max = b_max; }
+    void setSMin(int s_min) { this->s_min = s_min; }
+    void setSMax(int s_max) { this->s_max = s_max; }
+
     void setWidth(int width);
     void setHeight(int height);
     void setSpace(std::vector<std::vector<bool>> space) { this->space = space; }
 
     void setLivingCells(std::set<Cell> living_cells);
-
-    // // borrar
-    void draw()
-    {
-        for (int i = 0; i < width; i++)
-        {
-            for (int j = 0; j < height; j++)
-                std::cout << space[i][j] << " ";
-            std::cout << std::endl;
-        }
-    }
-
-    // // borrar
-    void print(Cell cell)
-    {
-        std::cout << "(x, y) ->" << cell.x << ", " << cell.y << std::endl;
-    }
 };
 
 #endif // GAME_CONTROLLER_H

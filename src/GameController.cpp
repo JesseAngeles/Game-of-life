@@ -28,7 +28,7 @@ int GameController::countNeighbourhood(Cell cell)
     int count = 0;
 
     for (int i = -1; i <= 1; i++)
-        for (int j = 0; j <= 1; j++)
+        for (int j = -1; j <= 1; j++)
         {
             // Ignorar [x][y]
             if (i == 0 && j == 0)
@@ -63,33 +63,24 @@ void GameController::updateSpace()
 
 void GameController::updateCells()
 {
-    draw();
-    for (auto c : living_cells)
-        print(c);
-
-    std::cout << std::endl << "celulas muertas: \n";
-
-    for (auto c : death_cells)
-        print(c);
-
+    std::set<Cell> test_cells;
     std::set<Cell> new_living_cells;
 
+    // test_cells.insert(living_cells.begin(), living_cells.end());
     living_cells.insert(death_cells.begin(), death_cells.end());
 
-    std::cout << "living cells size: " << living_cells.size() << std::endl;
-
     for (Cell cell : living_cells)
-    {
-        space[cell.x][cell.y] = true;
         if (transition(cell))
-            new_living_cells.insert(cell);
-    }
+            new_living_cells.insert(Cell(cell.x, cell.y));
 
-    living_cells.clear();
-    living_cells.insert(new_living_cells.begin(), new_living_cells.end());
+    // Se limpian unicamente las celdas que fueron consultadas
+    for (Cell cell : living_cells)
+        space[cell.x][cell.y] = false;
 
-    updateSpace();
+    // Reasignacion de celulas vivas y muertas
+    living_cells = new_living_cells;
     setDeathCells();
+    updateSpace();
 }
 
 // Setters
@@ -111,7 +102,7 @@ void GameController::setLivingCells(std::set<Cell> living_cells)
 {
     this->living_cells = living_cells;
     updateSpace();
-    setDeathCells();    
+    setDeathCells();
 }
 
 void GameController::setDeathCells()
