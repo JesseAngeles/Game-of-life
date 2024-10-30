@@ -2,13 +2,22 @@
 #include <vector>
 #include <set>
 
-#include "include/GameController.h"
+#include "Grapher.h"
+#include "GameController.h"
 
 using namespace std;
 
 void draw(vector<vector<bool>> board);
 
 int main(int argc, char *argv[])
+{
+    GameController controller(7, 7);
+    Grapher grapher(500, 500, "window", Color(255, 100, 100), controller);
+
+    grapher.mainLoop();
+}
+
+int main1(int argc, char *argv[])
 {
 
     GameController controller(7, 7);
