@@ -1,6 +1,9 @@
 #ifndef GAME_CONTROLLER_H
 #define GAME_CONTROLLER_H
 
+// // Erase
+#include <iostream>
+
 #include <vector>
 #include <set>
 
@@ -44,7 +47,7 @@ private:
     void updateSpace();
 
     // Setters
-    void setDeathCells();
+    void setDeathCells(Cell living_cell);
 
 public:
     // Constructor
@@ -52,6 +55,7 @@ public:
 
     // Functions
     void updateCells();
+    bool switchCell(Cell cell);
 
     // Getters
     int getBMin() const { return b_min; }
@@ -76,6 +80,18 @@ public:
     void setSpace(std::vector<std::vector<bool>> space) { this->space = space; }
 
     void setLivingCells(std::set<Cell> living_cells);
+
+    // // Erase
+    void draw()
+    {
+        std::cout << std::endl;
+        for (auto a : space)
+        {
+            for (auto c : a)
+                std::cout << c << " ";
+            std::cout << std::endl;
+        }
+    }
 };
 
 #endif // GAME_CONTROLLER_H

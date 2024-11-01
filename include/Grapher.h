@@ -7,6 +7,7 @@
 #include <cmath>
 
 #include "GameController.h"
+#include "GraphicBoard.h"
 
 using namespace sf;
 
@@ -22,6 +23,9 @@ private:
 
     std::string font_route = "./resources/fonts/Roboto-Medium.ttf";
 
+    // Frames
+    GraphicBoard board;
+
     // Scale
     float x_scale;
     float y_scale;
@@ -30,16 +34,16 @@ private:
     GameController controller;
 
     // Lines
-    std::vector<VertexArray> axes; 
+    std::vector<VertexArray> axes;
     std::vector<VertexArray> lines;
 
     // Rectangles (alive cells)
-    std::vector<RectangleShape> rectangles;
+    std::vector<std::pair<RectangleShape, Vector2i>> rectangles;
 
     // Functions
     void loadFont();
+    void setScale();
     Vector2i clickedCell(Vector2i position);
-
 
 public:
     // Constructor
@@ -53,10 +57,9 @@ public:
 
     // Drawers
     void drawLine(Vector2f pos_1, Vector2f pos_2, Color color);
-    void drawRectangle(Vector2f position, int width, int height, Color color);
+    void drawRectangle(Vector2i position, Color color);
 
     // Getters
-    
 
     // Settters
 };

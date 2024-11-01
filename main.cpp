@@ -11,10 +11,13 @@ void draw(vector<vector<bool>> board);
 
 int main(int argc, char *argv[])
 {
-    GameController controller(7, 7);
-    Grapher grapher(500, 500, "window", Color(255, 100, 100), controller);
+    GameController controller(5, 5);
+    Grapher grapher(500, 500, "Game of life", Color(0, 0, 0), controller);
+    
 
     grapher.mainLoop();
+
+    return 0;
 }
 
 int main1(int argc, char *argv[])

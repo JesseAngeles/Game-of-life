@@ -3,21 +3,23 @@
 // Constructor
 Grapher::Grapher(int width, int height, std::string tittle, Color backgroundColor, GameController controller)
     : width(width), height(height), tittle(tittle), backgroundColor(backgroundColor),
-      controller(controller), window(VideoMode(width, height), tittle)
+      controller(controller), window(VideoMode(width, height), tittle, Style::Close),
+      board(400, 400, Vector2f(50, 50), Color(100, 255, 100), controller)
 {
     loadFont();
-    drawAxis();
+    setScale();
+    // drawAxis();
+}
+
+void Grapher::setScale()
+{
+    x_scale = width / static_cast<float>(controller.getWidth());
+    y_scale = height / static_cast<float>(controller.getHeight());
 }
 
 void Grapher::drawAxis()
 {
-    int width_size = controller.getWidth();
-    int height_size = controller.getHeight();
-
-    x_scale = width / static_cast<float>(width_size);
-    y_scale = height / static_cast<float>(height_size);
-
-    for (int x = 0; x < width_size; x++)
+    for (int x = 0; x < controller.getWidth(); x++)
     {
         VertexArray line(Lines, 2);
         line[0].position = Vector2f(x * x_scale, 0);
@@ -27,7 +29,7 @@ void Grapher::drawAxis()
         axes.push_back(line);
     }
 
-    for (int y = 0; y < height_size; y++)
+    for (int y = 0; y < controller.getHeight(); y++)
     {
         VertexArray line(Lines, 2);
         line[0].position = Vector2f(0, y * y_scale);
@@ -43,6 +45,11 @@ void Grapher::mainLoop()
 {
     Clock clock;
 
+    // Board
+    Vector2f board_position = board.getPosition();
+    Vector2i board_size = board.getSize();
+
+
     while (window.isOpen())
     {
         Event event;
@@ -55,9 +62,29 @@ void Grapher::mainLoop()
             if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
             {
                 sf::Vector2i mouse_pos(event.mouseButton.x, event.mouseButton.y);
+                
+                // Click en cuadricula
+                if (fun_in(mouse_pos.x, board.getPosition().x, board.getPosition().x + board.getWidth()) &&
+                    fun_in(mouse_pos.y, board.getPosition().y, board.getPosition().y + board.getHeight()))
+                        board.clickEvent(mouse_pos);
+                    
+
                 Vector2i clicked_cell = clickedCell(mouse_pos);
-                // Probar clic del boton
-                std::cout << "mouse pos: " << clicked_cell.x << ", " << clicked_cell.y << std::endl;
+                bool cell = controller.switchCell(Cell(clicked_cell.x, clicked_cell.y));
+
+
+
+                // if (cell)
+                //     drawRectangle(clicked_cell, {255, 100, 100});
+                // else
+                // {
+                //     for (auto it = rectangles.begin(); it != rectangles.end(); ++it)
+                //         if (it->second == clicked_cell)
+                //         {
+                //             rectangles.erase(it);
+                //             break;
+                //         }
+                // }
             }
         }
 
@@ -72,9 +99,11 @@ void Grapher::mainLoop()
             for (const VertexArray &line : lines)
                 window.draw(line);
 
-        if (!rectangles.empty())
-            for (const RectangleShape &rectangle : rectangles)
-                window.draw(rectangle);
+        board.draw(window);
+
+        // if (!rectangles.empty())
+        //     for (const std::pair<RectangleShape, Vector2i> &rectangle : rectangles)
+        //         window.draw(rectangle.first);
         window.display();
     }
 }
@@ -88,8 +117,8 @@ void Grapher::loadFont()
 
 Vector2i Grapher::clickedCell(Vector2i position)
 {
-    int x_pos = position.x / static_cast<float>(controller.getWidth());
-    int y_pos = position.y / static_cast<float>(controller.getHeight());
+    int x_pos = position.x / static_cast<float>(x_scale);
+    int y_pos = position.y / static_cast<float>(y_scale);
 
     return Vector2i(x_pos, y_pos);
 }
@@ -104,14 +133,4 @@ void Grapher::drawLine(Vector2f pos_1, Vector2f pos_2, Color color)
     line[0].color = line[1].color = color;
 
     this->lines.push_back(line);
-}
-
-void Grapher::drawRectangle(Vector2f position, int widht, int height, Color color)
-{
-    RectangleShape rectangle(Vector2f(width, height));
-    rectangle.setPosition(position);
-    rectangle.setOutlineThickness(0);
-    rectangle.setFillColor(color);
-
-    this->rectangles.push_back(rectangle);
 }

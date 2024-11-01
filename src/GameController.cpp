@@ -79,8 +79,30 @@ void GameController::updateCells()
 
     // Reasignacion de celulas vivas y muertas
     living_cells = new_living_cells;
-    setDeathCells();
+
+    for (Cell cell : living_cells)
+        setDeathCells(cell);
+
     updateSpace();
+}
+
+// TODO optimizar el intercambio de celdas
+bool GameController::switchCell(Cell cell)
+{
+    if (living_cells.find(cell) != living_cells.end())
+    {
+        living_cells.erase(cell);
+        death_cells.insert(cell);
+    }
+    else
+    {
+        living_cells.insert(cell);
+        setDeathCells(cell);
+    }
+
+    space[cell.x][cell.y] = !space[cell.x][cell.y];
+
+    return space[cell.x][cell.y];
 }
 
 // Setters
@@ -102,25 +124,20 @@ void GameController::setLivingCells(std::set<Cell> living_cells)
 {
     this->living_cells = living_cells;
     updateSpace();
-    setDeathCells();
+    for (Cell cell : living_cells)
+        setDeathCells(cell);
 }
 
-void GameController::setDeathCells()
+void GameController::setDeathCells(Cell living_cell)
 {
-    for (Cell living_cell : living_cells)
-    {
-        int x = living_cell.x;
-        int y = living_cell.y;
+    for (int i = -1; i <= 1; i++)
+        for (int j = -1; j <= 1; j++)
+        {
+            int nx = living_cell.x + i;
+            int ny = living_cell.y + j;
 
-        for (int i = -1; i <= 1; i++)
-            for (int j = -1; j <= 1; j++)
-            {
-                int nx = x + i;
-                int ny = y + j;
-
-                if (fun_in(nx, 0, width - 1) && fun_in(ny, 0, height - 1))
-                    if (!space[nx][ny])
-                        death_cells.insert(Cell(nx, ny));
-            }
-    }
+            if (fun_in(nx, 0, width - 1) && fun_in(ny, 0, height - 1))
+                if (!space[nx][ny])
+                    death_cells.insert(Cell(nx, ny));
+        }
 }
