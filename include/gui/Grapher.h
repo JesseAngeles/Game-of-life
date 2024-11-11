@@ -7,8 +7,8 @@
 #include <cmath>
 
 #include "GameController.h"
-#include "GraphicBoard.h"
-#include "GraphicButtons.h"
+#include "FrameBoard.h"
+#include "FrameButtons.h"
 
 using namespace sf;
 
@@ -25,8 +25,8 @@ private:
     std::string font_route = "./resources/fonts/Roboto-Medium.ttf";
 
     // Frames
-    GraphicBoard board;
-    GraphicButtons buttons;
+    FrameBoard board;
+    FrameButtons buttons;
 
     // Scale
     float x_scale;

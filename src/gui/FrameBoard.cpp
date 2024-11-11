@@ -1,14 +1,14 @@
-#include "GraphicBoard.h"
+#include "gui/FrameBoard.h"
 
 // Constructor
-GraphicBoard::GraphicBoard(int width, int height, Vector2f relative_pos, Color background_color, GameController controller)
-    : GraphicFrame(width, height, relative_pos, background_color), controller(controller)
+FrameBoard::FrameBoard(int width, int height, Vector2f relative_pos, Color background_color, GameController controller)
+    : Frame(width, height, relative_pos, background_color), controller(controller)
 {
     drawAxes();
 }
 
 // Drawers
-void GraphicBoard::drawAxes()
+void FrameBoard::drawAxes()
 {
     int width_size = controller.getWidth();
     int height_size = controller.getHeight();
@@ -37,7 +37,7 @@ void GraphicBoard::drawAxes()
     }
 }
 
-void GraphicBoard::drawRectangle(Vector2i pos, Color color)
+void FrameBoard::drawRectangle(Vector2i pos, Color color)
 {
     RectangleShape rectangle(Vector2f(x_scale, y_scale));
     rectangle.setPosition({pos.x * x_scale + relative_pos.x, pos.y * y_scale + relative_pos.y});
@@ -47,9 +47,9 @@ void GraphicBoard::drawRectangle(Vector2i pos, Color color)
     this->rectangles.push_back(std::make_pair(rectangle, pos));
 }
 
-void GraphicBoard::draw(RenderWindow &window)
+void FrameBoard::draw(RenderWindow &window)
 {
-    GraphicFrame::draw(window);
+    Frame::draw(window);
 
     if (!rectangles.empty())
         for (const std::pair<RectangleShape, Vector2i> &rectangle : rectangles)
@@ -60,7 +60,7 @@ void GraphicBoard::draw(RenderWindow &window)
 }
 
 // Clicker function
-void GraphicBoard::clickEvent(Vector2i pos)
+void FrameBoard::clickEvent(Vector2i pos)
 {
     int x_pos = (pos.x - relative_pos.x) / x_scale;
     int y_pos = (pos.y - relative_pos.y) / y_scale;

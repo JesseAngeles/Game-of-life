@@ -2,7 +2,7 @@
 #include <vector>
 #include <set>
 
-#include "Grapher.h"
+#include "gui/Grapher.h"
 #include "GameController.h"
 
 using namespace std;

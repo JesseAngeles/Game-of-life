@@ -1,12 +1,12 @@
-#ifndef GRAPHIC_BOARD_H
-#define GRAPHIC_BOARD_H
+#ifndef GRAME_BOARD_H
+#define GRAME_BOARD_H
 
-#include "GraphicFrame.h"
+#include "gui/Frame.h"
 #include "GameController.h"
 
 using namespace sf;
 
-class GraphicBoard : public GraphicFrame
+class FrameBoard : public Frame
 {
 private:
     // Game controller
@@ -22,7 +22,7 @@ private:
 
 public:
     // Constructor
-    GraphicBoard(int width, int height, Vector2f position, Color background_color, GameController controller);
+    FrameBoard(int width, int height, Vector2f position, Color background_color, GameController controller);
 
     // Drawers
     void drawAxes();
@@ -37,4 +37,4 @@ public:
     // Setters
 };
 
-#endif // GRAPHIC_BOARD_H
+#endif // GRAME_BOARD_H

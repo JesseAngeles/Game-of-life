@@ -1,6 +1,6 @@
-#include "GraphicFrame.h"
+#include "gui/Frame.h"
 
-GraphicFrame::GraphicFrame(int width, int height, Vector2f relative_pos, Color background_color)
+Frame::Frame(int width, int height, Vector2f relative_pos, Color background_color)
     : width(width), height(height), relative_pos(relative_pos), background_color(background_color)
 {
     // Draw background
@@ -10,7 +10,7 @@ GraphicFrame::GraphicFrame(int width, int height, Vector2f relative_pos, Color b
     frame.setFillColor(background_color);
 }
 
-void GraphicFrame::draw(RenderWindow &window)
+void Frame::draw(RenderWindow &window)
 {
     window.draw(frame);
 }

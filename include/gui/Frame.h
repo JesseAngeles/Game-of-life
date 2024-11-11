@@ -1,11 +1,12 @@
-#ifndef GRAPHIC_FRAME_H
-#define GRAPHIC_FRAME_H
+#ifndef FRAME_H
+#define FRAME_H
 
 #include <SFML/Graphics.hpp>
+#include "Functions.h"
 
 using namespace sf;
 
-class GraphicFrame
+class Frame
 {
 protected:
     // Frame
@@ -21,7 +22,7 @@ protected:
 
 public:
     // Constructor
-    GraphicFrame(int width, int height, Vector2f relative_pos, Color background_color);
+    Frame(int width, int height, Vector2f relative_pos, Color background_color);
 
     // Drawers
     void draw(RenderWindow &window);
@@ -34,4 +35,4 @@ public:
     Vector2f getRelativePosition() const { return relative_pos; }
 };
 
-#endif // GRAPHIC_FRAME_H
+#endif // FRAME_H

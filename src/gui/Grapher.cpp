@@ -1,11 +1,11 @@
-#include "Grapher.h"
+#include "gui/Grapher.h"
 
 // Constructor
 Grapher::Grapher(int width, int height, std::string tittle, Color backgroundColor, GameController controller)
     : width(width), height(height), tittle(tittle), backgroundColor(backgroundColor),
       controller(controller), window(VideoMode(width, height), tittle, Style::Close),
-      board(400, 400, Vector2f(10, 10), Color(100, 255, 100), controller),
-      buttons(400, 400, Vector2f(420, 10), Color(100, 255, 255), controller)
+      board(400, 400, Vector2f(10, 10), Color(0, 255, 100), controller),
+      buttons(310, 70, Vector2f(420, 10), Color(100, 255, 255), controller)
 {
     loadFont();
     setScale();
@@ -69,6 +69,13 @@ void Grapher::mainLoop()
                     fun_in(mouse_pos.y, board.getRelativePosition().y, board.getRelativePosition().y + board.getHeight()))
                         board.clickEvent(mouse_pos);
                     
+                // Click en botones
+                if (fun_in(mouse_pos.x, buttons.getRelativePosition().x, buttons.getRelativePosition().x + buttons.getWidth()) &&
+                    fun_in(mouse_pos.x, buttons.getRelativePosition().x, buttons.getRelativePosition().x + buttons.getWidth()))
+                        buttons.clickEvent(mouse_pos);
+
+                // Click en graficas
+
 
                 Vector2i clicked_cell = clickedCell(mouse_pos);
                 bool cell = controller.switchCell(Cell(clicked_cell.x, clicked_cell.y));
