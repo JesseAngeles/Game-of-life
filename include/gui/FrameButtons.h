@@ -24,16 +24,16 @@ private:
     Button load_button;
 
     // Button Functions
-    static void startFunction();
-    static void resetFunction();
-    static void stepFunction();
-    static void saveFunction();
-    static void loadFunction();
+    void startFunction();
+    void resetFunction();
+    void stepFunction();
+    void saveFunction();
+    void loadFunction();
 
 
 public:
     // Constructor
-    FrameButtons(int width, int height, Vector2f relative_pos, Color background_color, GameController controller);
+    FrameButtons(int width, int height, Vector2f relative_pos, Color background_color, GameController &controller);
     
     // Drawers
     void draw(RenderWindow &window);
@@ -41,7 +41,7 @@ public:
     
 
     // Clicker functions
-    void clickEvent(Vector2i position);
+    void clickEvent(Vector2i position, GameController &controller);
 
     // Getters
 

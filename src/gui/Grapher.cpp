@@ -9,7 +9,7 @@ Grapher::Grapher(int width, int height, std::string tittle, Color backgroundColo
 {
     loadFont();
     setScale();
-    // drawAxis();
+
 }
 
 void Grapher::setScale()
@@ -18,28 +18,6 @@ void Grapher::setScale()
     y_scale = height / static_cast<float>(controller.getHeight());
 }
 
-void Grapher::drawAxis()
-{
-    for (int x = 0; x < controller.getWidth(); x++)
-    {
-        VertexArray line(Lines, 2);
-        line[0].position = Vector2f(x * x_scale, 0);
-        line[1].position = Vector2f(x * x_scale, height);
-        line[0].color = line[1].color = Color(250, 250, 250);
-
-        axes.push_back(line);
-    }
-
-    for (int y = 0; y < controller.getHeight(); y++)
-    {
-        VertexArray line(Lines, 2);
-        line[0].position = Vector2f(0, y * y_scale);
-        line[1].position = Vector2f(width, y * y_scale);
-        line[0].color = line[1].color = Color(250, 250, 250);
-
-        axes.push_back(line);
-    }
-}
 
 // Main Loop
 void Grapher::mainLoop()
@@ -49,7 +27,6 @@ void Grapher::mainLoop()
     // Board
     Vector2f board_position = board.getRelativePosition();
     Vector2i board_size = board.getSize();
-
 
     while (window.isOpen())
     {
@@ -63,36 +40,21 @@ void Grapher::mainLoop()
             if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
             {
                 sf::Vector2i mouse_pos(event.mouseButton.x, event.mouseButton.y);
-                
+
                 // Click en cuadricula
                 if (fun_in(mouse_pos.x, board.getRelativePosition().x, board.getRelativePosition().x + board.getWidth()) &&
                     fun_in(mouse_pos.y, board.getRelativePosition().y, board.getRelativePosition().y + board.getHeight()))
-                        board.clickEvent(mouse_pos);
-                    
+                {
+                    board.clickEvent(mouse_pos, controller);
+                }
                 // Click en botones
-                if (fun_in(mouse_pos.x, buttons.getRelativePosition().x, buttons.getRelativePosition().x + buttons.getWidth()) &&
-                    fun_in(mouse_pos.x, buttons.getRelativePosition().x, buttons.getRelativePosition().x + buttons.getWidth()))
-                        buttons.clickEvent(mouse_pos);
+                else if (fun_in(mouse_pos.x, buttons.getRelativePosition().x, buttons.getRelativePosition().x + buttons.getWidth()) &&
+                         fun_in(mouse_pos.y, buttons.getRelativePosition().y, buttons.getRelativePosition().y + buttons.getHeight()))
+                    buttons.clickEvent(mouse_pos, controller);
 
+                else
+                    controller.draw();
                 // Click en graficas
-
-
-                Vector2i clicked_cell = clickedCell(mouse_pos);
-                bool cell = controller.switchCell(Cell(clicked_cell.x, clicked_cell.y));
-
-
-
-                // if (cell)
-                //     drawRectangle(clicked_cell, {255, 100, 100});
-                // else
-                // {
-                //     for (auto it = rectangles.begin(); it != rectangles.end(); ++it)
-                //         if (it->second == clicked_cell)
-                //         {
-                //             rectangles.erase(it);
-                //             break;
-                //         }
-                // }
             }
         }
 
@@ -111,9 +73,6 @@ void Grapher::mainLoop()
         board.draw(window);
         buttons.draw(window);
 
-        // if (!rectangles.empty())
-        //     for (const std::pair<RectangleShape, Vector2i> &rectangle : rectangles)
-        //         window.draw(rectangle.first);
         window.display();
     }
 }
@@ -123,14 +82,6 @@ void Grapher::loadFont()
 {
     if (!this->font.loadFromFile(font_route))
         std::cout << "Error in Grapher.loadFont. Can´t load font from " << font_route << std::endl;
-}
-
-Vector2i Grapher::clickedCell(Vector2i position)
-{
-    int x_pos = position.x / static_cast<float>(x_scale);
-    int y_pos = position.y / static_cast<float>(y_scale);
-
-    return Vector2i(x_pos, y_pos);
 }
 
 // Drawers

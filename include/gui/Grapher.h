@@ -45,7 +45,6 @@ private:
     // Functions
     void loadFont();
     void setScale();
-    Vector2i clickedCell(Vector2i position);
 
 public:
     // Constructor

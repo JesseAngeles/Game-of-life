@@ -1,14 +1,14 @@
 #include "gui/FrameBoard.h"
 
 // Constructor
-FrameBoard::FrameBoard(int width, int height, Vector2f relative_pos, Color background_color, GameController controller)
-    : Frame(width, height, relative_pos, background_color), controller(controller)
+FrameBoard::FrameBoard(int width, int height, Vector2f relative_pos, Color background_color, GameController &controller)
+    : Frame(width, height, relative_pos, background_color)
 {
-    drawAxes();
+    drawAxes(controller);
 }
 
 // Drawers
-void FrameBoard::drawAxes()
+void FrameBoard::drawAxes(GameController controller)
 {
     int width_size = controller.getWidth();
     int height_size = controller.getHeight();
@@ -60,7 +60,7 @@ void FrameBoard::draw(RenderWindow &window)
 }
 
 // Clicker function
-void FrameBoard::clickEvent(Vector2i pos)
+void FrameBoard::clickEvent(Vector2i pos, GameController &controller)
 {
     int x_pos = (pos.x - relative_pos.x) / x_scale;
     int y_pos = (pos.y - relative_pos.y) / y_scale;
@@ -69,16 +69,12 @@ void FrameBoard::clickEvent(Vector2i pos)
 
     bool cell = controller.switchCell(Cell(x_pos, y_pos));
     if (cell)
-    {
         drawRectangle(clicked_cell, {250, 100, 100});
-    }
     else
-    {
         for (auto it = rectangles.begin(); it != rectangles.end(); ++it)
             if (it->second == clicked_cell)
             {
                 rectangles.erase(it);
                 break;
             }
-    }
 }

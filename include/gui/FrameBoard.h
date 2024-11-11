@@ -9,8 +9,6 @@ using namespace sf;
 class FrameBoard : public Frame
 {
 private:
-    // Game controller
-    GameController controller;
 
     // Scale
     float x_scale;
@@ -22,15 +20,15 @@ private:
 
 public:
     // Constructor
-    FrameBoard(int width, int height, Vector2f position, Color background_color, GameController controller);
+    FrameBoard(int width, int height, Vector2f position, Color background_color, GameController &controller);
 
     // Drawers
-    void drawAxes();
+    void drawAxes(GameController);
     void drawRectangle(Vector2i position, Color color);
     void draw(RenderWindow &window);
 
     // Clicker functions
-    void clickEvent(Vector2i position);
+    void clickEvent(Vector2i position, GameController &controller);
 
     // Getters
     

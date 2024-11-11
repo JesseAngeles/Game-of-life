@@ -4,7 +4,8 @@
 void startFunction();
 
 // Constructor
-FrameButtons::FrameButtons(int width, int height, Vector2f relative_pos, Color background_color, GameController controller)
+// Constructor
+FrameButtons::FrameButtons(int width, int height, Vector2f relative_pos, Color background_color, GameController &controller)
     : Frame(width, height, relative_pos, background_color), controller(controller),
       load_button(50, 50, Vector2f(relative_pos.x + 10, relative_pos.y + 10), Color(0, 0, 0), "./resources/images/load.png"),
       save_button(50, 50, Vector2f(relative_pos.x + 70, relative_pos.y + 10), Color(0, 0, 0), "./resources/images/save.png"),
@@ -12,12 +13,12 @@ FrameButtons::FrameButtons(int width, int height, Vector2f relative_pos, Color b
       step_button(50, 50, Vector2f(relative_pos.x + 190, relative_pos.y + 10), Color(0, 0, 0), "./resources/images/step.png"),
       reset_button(50, 50, Vector2f(relative_pos.x + 250, relative_pos.y + 10), Color(0, 0, 0), "./resources/images/reset.png")
 {
-    // Button functions assignation
-    start_button.setButtonFunction(startFunction);
-    reset_button.setButtonFunction(resetFunction);
-    step_button.setButtonFunction(stepFunction);
-    save_button.setButtonFunction(saveFunction);
-    load_button.setButtonFunction(loadFunction);
+    // Asignación de funciones de botón utilizando lambdas
+    start_button.setButtonFunction([this]() { startFunction(); });
+    reset_button.setButtonFunction([this]() { resetFunction(); });
+    step_button.setButtonFunction([this]() { stepFunction(); });
+    save_button.setButtonFunction([this]() { saveFunction(); });
+    load_button.setButtonFunction([this]() { loadFunction(); });
 }
 
 // Drawers
@@ -36,6 +37,7 @@ void FrameButtons::draw(RenderWindow &window)
 void FrameButtons::startFunction()
 {
     std::cout << "Button start!" << std::endl;
+    controller.draw();
 }
 
 void FrameButtons::resetFunction()
@@ -47,6 +49,9 @@ void FrameButtons::stepFunction()
 {
 
     std::cout << "Button step!" << std::endl;
+    controller.updateCells();
+    controller.draw();
+
 }
 
 void FrameButtons::saveFunction()
@@ -61,12 +66,16 @@ void FrameButtons::loadFunction()
 }
 
 // Clicker function
-void FrameButtons::clickEvent(Vector2i pos)
+void FrameButtons::clickEvent(Vector2i pos, GameController &controller)
 {
+    this->controller = controller;
+
     // Buttons
     start_button.triggerFunction(pos);
     reset_button.triggerFunction(pos);
     step_button.triggerFunction(pos);
     save_button.triggerFunction(pos);
     load_button.triggerFunction(pos);
+
+    controller = this->controller;
 }
