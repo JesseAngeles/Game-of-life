@@ -8,6 +8,7 @@
 
 #include "GameController.h"
 #include "GraphicBoard.h"
+#include "GraphicButtons.h"
 
 using namespace sf;
 
@@ -25,6 +26,7 @@ private:
 
     // Frames
     GraphicBoard board;
+    GraphicButtons buttons;
 
     // Scale
     float x_scale;

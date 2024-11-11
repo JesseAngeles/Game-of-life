@@ -1,15 +1,9 @@
 #include "GraphicBoard.h"
 
 // Constructor
-GraphicBoard::GraphicBoard(int width, int height, Vector2f relative_pos, Color backgroundColor, GameController controller)
-    : width(width), height(height), relative_pos(relative_pos), controller(controller)
+GraphicBoard::GraphicBoard(int width, int height, Vector2f relative_pos, Color background_color, GameController controller)
+    : GraphicFrame(width, height, relative_pos, background_color), controller(controller)
 {
-    // Draw background
-    frame = RectangleShape(Vector2f(width, height));
-    frame.setPosition(relative_pos);
-    frame.setOutlineThickness(0);
-    frame.setFillColor(backgroundColor);
-
     drawAxes();
 }
 
@@ -45,8 +39,8 @@ void GraphicBoard::drawAxes()
 
 void GraphicBoard::drawRectangle(Vector2i pos, Color color)
 {
-    RectangleShape rectangle(Vector2f(x_scale - 2, y_scale - 2));
-    rectangle.setPosition({pos.x * x_scale + 1 + relative_pos.x, pos.y * y_scale + 1 + relative_pos.y});
+    RectangleShape rectangle(Vector2f(x_scale, y_scale));
+    rectangle.setPosition({pos.x * x_scale + relative_pos.x, pos.y * y_scale + relative_pos.y});
     rectangle.setOutlineThickness(0);
     rectangle.setFillColor(color);
 
@@ -55,14 +49,14 @@ void GraphicBoard::drawRectangle(Vector2i pos, Color color)
 
 void GraphicBoard::draw(RenderWindow &window)
 {
-    window.draw(frame);
-
-    for (const VertexArray &axis : axes)
-        window.draw(axis);
+    GraphicFrame::draw(window);
 
     if (!rectangles.empty())
         for (const std::pair<RectangleShape, Vector2i> &rectangle : rectangles)
             window.draw(rectangle.first);
+
+    for (const VertexArray &axis : axes)
+        window.draw(axis);
 }
 
 // Clicker function

@@ -4,7 +4,8 @@
 Grapher::Grapher(int width, int height, std::string tittle, Color backgroundColor, GameController controller)
     : width(width), height(height), tittle(tittle), backgroundColor(backgroundColor),
       controller(controller), window(VideoMode(width, height), tittle, Style::Close),
-      board(400, 400, Vector2f(50, 50), Color(100, 255, 100), controller)
+      board(400, 400, Vector2f(10, 10), Color(100, 255, 100), controller),
+      buttons(400, 400, Vector2f(420, 10), Color(100, 255, 255), controller)
 {
     loadFont();
     setScale();
@@ -46,7 +47,7 @@ void Grapher::mainLoop()
     Clock clock;
 
     // Board
-    Vector2f board_position = board.getPosition();
+    Vector2f board_position = board.getRelativePosition();
     Vector2i board_size = board.getSize();
 
 
@@ -64,8 +65,8 @@ void Grapher::mainLoop()
                 sf::Vector2i mouse_pos(event.mouseButton.x, event.mouseButton.y);
                 
                 // Click en cuadricula
-                if (fun_in(mouse_pos.x, board.getPosition().x, board.getPosition().x + board.getWidth()) &&
-                    fun_in(mouse_pos.y, board.getPosition().y, board.getPosition().y + board.getHeight()))
+                if (fun_in(mouse_pos.x, board.getRelativePosition().x, board.getRelativePosition().x + board.getWidth()) &&
+                    fun_in(mouse_pos.y, board.getRelativePosition().y, board.getRelativePosition().y + board.getHeight()))
                         board.clickEvent(mouse_pos);
                     
 
@@ -99,7 +100,9 @@ void Grapher::mainLoop()
             for (const VertexArray &line : lines)
                 window.draw(line);
 
+        // Frames
         board.draw(window);
+        buttons.draw(window);
 
         // if (!rectangles.empty())
         //     for (const std::pair<RectangleShape, Vector2i> &rectangle : rectangles)
