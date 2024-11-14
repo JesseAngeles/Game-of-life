@@ -8,7 +8,7 @@
 
 #include "GameController.h"
 #include "FrameBoard.h"
-#include "FrameButtons.h"
+#include "Button.h"
 
 using namespace sf;
 
@@ -23,32 +23,39 @@ private:
     Font font;
 
     std::string font_route = "./resources/fonts/Roboto-Medium.ttf";
-
     // Frames
     FrameBoard board;
-    FrameButtons buttons;
-
-    // Scale
-    float x_scale;
-    float y_scale;
 
     // Game Controller
-    GameController controller;
+    GameController &controller;
 
     // Lines
     std::vector<VertexArray> axes;
     std::vector<VertexArray> lines;
+
+    // Buttons
+    Button start_button;
+    Button step_button;
+    Button reset_button;
+    Button save_button;
+    Button load_button;
+
+    // Button Functions
+    void startFunction();
+    void stepFunction();
+    void resetFunction();
+    void saveFunction();
+    void loadFunction();
 
     // Rectangles (alive cells)
     std::vector<std::pair<RectangleShape, Vector2i>> rectangles;
 
     // Functions
     void loadFont();
-    void setScale();
 
 public:
     // Constructor
-    Grapher(int width, int height, std::string tittle, Color background, GameController controller);
+    Grapher(int width, int height, std::string tittle, Color background, GameController &controller);
     void drawAxis();
 
     RenderWindow window;

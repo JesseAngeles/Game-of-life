@@ -2,79 +2,76 @@
 
 // Constructor
 FrameBoard::FrameBoard(int width, int height, Vector2f relative_pos, Color background_color, GameController &controller)
-    : Frame(width, height, relative_pos, background_color)
+    : Frame(width, height, relative_pos, background_color), controller(controller)
 {
-    drawAxes(controller);
+    drawAxes();
 }
 
 // Drawers
-void FrameBoard::drawAxes(GameController controller)
+void FrameBoard::drawAxes()
 {
-    int width_size = controller.getWidth();
-    int height_size = controller.getHeight();
+    int width_size = controller.getX();
+    int height_size = controller.getY();
 
     x_scale = width / static_cast<float>(width_size);
     y_scale = height / static_cast<float>(height_size);
 
-    for (int x = 0; x < width_size; x++)
-    {
-        VertexArray line(Lines, 2);
-        line[0].position = Vector2f((x * x_scale) + relative_pos.x, relative_pos.y);
-        line[1].position = Vector2f((x * x_scale) + relative_pos.x, height + relative_pos.y);
-        line[0].color = line[1].color = Color(250, 250, 250);
-
-        axes.push_back(line);
-    }
-
     for (int y = 0; y < height_size; y++)
     {
-        VertexArray line(Lines, 2);
-        line[0].position = Vector2f(relative_pos.x, (y * y_scale) + relative_pos.y);
-        line[1].position = Vector2f(width + relative_pos.x, (y * y_scale) + relative_pos.y);
-        line[0].color = line[1].color = Color(250, 250, 250);
+        std::vector<std::pair<RectangleShape, bool>> line;
+        for (int x = 0; x < width_size; x++)
+            line.push_back(std::make_pair(drawRectangle(y, x, {0, 0, 0}), false));
 
-        axes.push_back(line);
+        space.push_back(line);
     }
 }
 
-void FrameBoard::drawRectangle(Vector2i pos, Color color)
+RectangleShape FrameBoard::drawRectangle(int y, int x, Color color)
 {
     RectangleShape rectangle(Vector2f(x_scale, y_scale));
-    rectangle.setPosition({pos.x * x_scale + relative_pos.x, pos.y * y_scale + relative_pos.y});
-    rectangle.setOutlineThickness(0);
+    rectangle.setPosition({x * x_scale + relative_pos.x, y * y_scale + relative_pos.y});
+    rectangle.setOutlineColor({100, 100, 100});
+    rectangle.setOutlineThickness(2);
     rectangle.setFillColor(color);
 
-    this->rectangles.push_back(std::make_pair(rectangle, pos));
+    return rectangle;
+}
+
+void FrameBoard::changeColor(int y, int x)
+{
+    space[y][x].second = !space[y][x].second;
+
+    if (space[y][x].second)
+    {
+        space[y][x].first.setFillColor({255, 255, 255});
+    }
+    else
+        space[y][x].first.setFillColor({0, 0, 0});
 }
 
 void FrameBoard::draw(RenderWindow &window)
 {
     Frame::draw(window);
 
-    if (!rectangles.empty())
-        for (const std::pair<RectangleShape, Vector2i> &rectangle : rectangles)
-            window.draw(rectangle.first);
+    for (std::vector<std::pair<RectangleShape, bool>> line : space)
+        for (std::pair<RectangleShape, bool> square : line)
+            window.draw(square.first);
 
     for (const VertexArray &axis : axes)
         window.draw(axis);
 }
 
 // Clicker function
-void FrameBoard::clickEvent(Vector2i pos, GameController &controller)
+void FrameBoard::clickEvent(Vector2i pos)
 {
+    if (!fun_in(pos.x, relative_pos.x, relative_pos.x + width) ||
+        !fun_in(pos.y, relative_pos.y, relative_pos.y + height))
+        return;
+
     int x_pos = (pos.x - relative_pos.x) / x_scale;
     int y_pos = (pos.y - relative_pos.y) / y_scale;
 
-    Vector2i clicked_cell(x_pos, y_pos);
+    changeColor(y_pos, x_pos);
 
-    bool cell = controller.switchCell(Cell(x_pos, y_pos));
-    if (cell)
-        drawRectangle(clicked_cell, {250, 100, 100});
-    else
-        for (auto it = rectangles.begin(); it != rectangles.end(); ++it)
-            if (it->second == clicked_cell)
-            {
-                rectangles.erase(it);
-                break;
-            }
+    controller.switchCell({y_pos, x_pos});
 }

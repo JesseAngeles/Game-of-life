@@ -16,19 +16,22 @@ private:
 
     // Elements
     std::vector<VertexArray> axes;
-    std::vector<std::pair<RectangleShape, Vector2i>> rectangles;
+    std::vector<std::vector<std::pair<RectangleShape, bool>>> space;
+
+    GameController &controller;
 
 public:
     // Constructor
     FrameBoard(int width, int height, Vector2f position, Color background_color, GameController &controller);
 
     // Drawers
-    void drawAxes(GameController);
-    void drawRectangle(Vector2i position, Color color);
+    void drawAxes();
+    RectangleShape drawRectangle(int y, int x, Color color);
+    void changeColor(int y, int x);
     void draw(RenderWindow &window);
 
     // Clicker functions
-    void clickEvent(Vector2i position, GameController &controller);
+    void clickEvent(Vector2i position);
 
     // Getters
     

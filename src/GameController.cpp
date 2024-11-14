@@ -1,121 +1,135 @@
 #include "GameController.h"
 
 // Controlador
-GameController::GameController(int width, int height)
-    : width(width), height(height)
+GameController::GameController(int y, int x)
+    : y(y), x(x)
 {
     resizeSpace();
     cleanSpace();
 }
 
-// Functions
-void GameController::resizeSpace()
-{
-    space.resize(width);
-
-    for (int i = 0; i < width; ++i)
-        space[i].resize(height);
-}
-
-void GameController::cleanSpace()
-{
-    for (std::vector<bool> row : space)
-        std::fill(row.begin(), row.end(), false);
-}
-
-int GameController::countNeighbourhood(Cell cell)
-{
-    int count = 0;
-
-    for (int i = -1; i <= 1; i++)
-        for (int j = -1; j <= 1; j++)
-        {
-            // Ignorar [x][y]
-            if (i == 0 && j == 0)
-                continue;
-
-            // Validacion de bordes
-            int nx = cell.x + i;
-            int ny = cell.y + j;
-            if (fun_in(nx, 0, width - 1) && fun_in(ny, 0, height - 1))
-                if (space[nx][ny])
-                    count++;
-        }
-
-    return count;
-}
-
+// Private functions
 bool GameController::transition(Cell cell)
 {
     int neightbourhood = countNeighbourhood(cell);
 
-    if (space[cell.x][cell.y])
+    if (space[cell.y][cell.x])
         return fun_in(neightbourhood, s_min, s_max);
     else
         return fun_in(neightbourhood, b_min, b_max);
 }
 
-void GameController::updateSpace()
+
+// Neighbour functions
+
+void GameController::forEachNeighbour(Cell cell, std::function<void(int, int)> callback)
 {
-    for (Cell cell : living_cells)
-        space[cell.x][cell.y] = true;
+    for (int i = -1; i <= 1; i++)
+        for (int j = -1; j <= 1; j++)
+        {
+            if (i == 0 && j == 0)
+                continue;
+
+            int ny = cell.y + i;
+            int nx = cell.x + j;
+            if (fun_in(ny, 0, y - 1) && fun_in(nx, 0, x - 1))
+                callback(ny, nx);
+        }
 }
 
-void GameController::updateCells()
+int GameController::countNeighbourhood(Cell cell)
 {
-    std::set<Cell> test_cells;
-    std::set<Cell> new_living_cells;
+    int count = 0;
+    forEachNeighbour(cell, [&](int ny, int nx)
+                     {
+        if (space[ny][nx])
+            count++; });
 
-    // test_cells.insert(living_cells.begin(), living_cells.end());
-    living_cells.insert(death_cells.begin(), death_cells.end());
-
-    for (Cell cell : living_cells)
-        if (transition(cell))
-            new_living_cells.insert(Cell(cell.x, cell.y));
-
-    // Se limpian unicamente las celdas que fueron consultadas
-    for (Cell cell : living_cells)
-        space[cell.x][cell.y] = false;
-
-    // Reasignacion de celulas vivas y muertas
-    living_cells = new_living_cells;
-
-    for (Cell cell : living_cells)
-        setDeathCells(cell);
-
-    updateSpace();
+    return count;
 }
 
-// TODO optimizar el intercambio de celdas
+void GameController::updateNear(Cell cell)
+{
+    forEachNeighbour(cell, [&](int ny, int nx)
+                     {
+        if(!countNeighbourhood({ny, nx}))
+            death_cells.erase({ny, nx}); });
+}
+
+void GameController::setDeathCells(Cell cell)
+{
+    forEachNeighbour(cell, [&](int ny, int nx)
+                     {
+        if (!space[ny][nx])
+            death_cells.insert({ny, nx}); });
+}
+
+// Public functions
+std::set<Cell> GameController::step()
+{
+    std::set<Cell> switch_cells;
+
+    std::set<Cell> test_cells = living_cells;
+    test_cells.insert(death_cells.begin(), death_cells.end());
+
+    for (Cell cell : test_cells)
+        if (space[cell.y][cell.x] != transition(cell))
+            switch_cells.insert(cell);
+
+    for (Cell cell : switch_cells)
+        switchCell(cell);
+
+    return switch_cells;
+}
+
 bool GameController::switchCell(Cell cell)
 {
-    if (living_cells.find(cell) != living_cells.end())
-    {
-        living_cells.erase(cell);
-        death_cells.insert(cell);
-    }
-    else
+    space[cell.y][cell.x] = !space[cell.y][cell.x];
+
+    // Switch to alive (1)
+    if (living_cells.find(cell) == living_cells.end())
     {
         living_cells.insert(cell);
+        death_cells.erase(cell);
         setDeathCells(cell);
     }
+    else // Switch to death(0)
+    {
+        living_cells.erase(cell);
+        if (countNeighbourhood(cell))
+            death_cells.insert(cell);
 
-    space[cell.x][cell.y] = !space[cell.x][cell.y];
+        updateNear(cell);
+    }
 
-    return space[cell.x][cell.y];
+    return space[cell.y][cell.x];
+}
+
+void GameController::resizeSpace()
+{
+    space.resize(y);
+
+    for (int i = 0; i < y; ++i)
+        space[i].resize(x);
+}
+
+void GameController::cleanSpace()
+{
+    for (std::vector<bool> &row : space)
+        std::fill(row.begin(), row.end(), false);
 }
 
 // Setters
-void GameController::setWidth(int width)
+void GameController::setY(int y)
 {
-    this->width = width;
+    this->y = y;
     resizeSpace();
     cleanSpace();
 }
 
-void GameController::setHeight(int height)
+void GameController::setX(int x)
 {
-    this->height = height;
+    this->x = x;
     resizeSpace();
     cleanSpace();
 }
@@ -123,21 +137,6 @@ void GameController::setHeight(int height)
 void GameController::setLivingCells(std::set<Cell> living_cells)
 {
     this->living_cells = living_cells;
-    updateSpace();
     for (Cell cell : living_cells)
         setDeathCells(cell);
-}
-
-void GameController::setDeathCells(Cell living_cell)
-{
-    for (int i = -1; i <= 1; i++)
-        for (int j = -1; j <= 1; j++)
-        {
-            int nx = living_cell.x + i;
-            int ny = living_cell.y + j;
-
-            if (fun_in(nx, 0, width - 1) && fun_in(ny, 0, height - 1))
-                if (!space[nx][ny])
-                    death_cells.insert(Cell(nx, ny));
-        }
 }

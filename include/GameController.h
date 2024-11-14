@@ -6,15 +6,16 @@
 
 #include <vector>
 #include <set>
+#include <functional>
 
 #include "Functions.h"
 
 struct Cell
 {
-    int x;
     int y;
+    int x;
 
-    Cell(int x, int y) : x(x), y(y) {};
+    Cell(int y, int x) : y(y), x(x) {};
     bool operator<(const Cell &other) const
     {
         return (x < other.x) || (x == other.x && y < other.y);
@@ -31,8 +32,8 @@ private:
     int s_max = 3;
 
     // Regular space
-    int width;
-    int height;
+    int y;
+    int x;
     std::vector<std::vector<bool>> space;
 
     // Cellular positions
@@ -40,22 +41,26 @@ private:
     std::set<Cell> death_cells;  // death (near to alive)
 
     // Functions
-    void resizeSpace();
-    void cleanSpace();
-    int countNeighbourhood(Cell cell);
-    bool transition(Cell cell);
+
     void updateSpace();
 
-    // Setters
+    // Neighbour functions
+    void forEachNeighbour(Cell cell, std::function<void(int, int)> callback);
+    int countNeighbourhood(Cell cell);
+    void updateNear(Cell cell);
+    bool transition(Cell cell);
     void setDeathCells(Cell living_cell);
 
 public:
     // Constructor
-    GameController(int width, int height);
+    GameController(int y, int x);
 
     // Functions
-    void updateCells();
+    std::set<Cell> step();
     bool switchCell(Cell cell);
+
+    void resizeSpace();
+    void cleanSpace();
 
     // Getters
     int getBMin() const { return b_min; }
@@ -63,11 +68,12 @@ public:
     int getSMin() const { return s_min; }
     int getSMax() const { return s_max; }
 
-    int getWidth() const { return width; }
-    int getHeight() const { return height; }
+    int getY() const { return y; }
+    int getX() const { return x; }
     std::vector<std::vector<bool>> getSpace() const { return space; }
 
     std::set<Cell> getLivingCells() const { return living_cells; }
+    std::set<Cell> getDeathCells() const { return death_cells; }
 
     // Setters
     void setBMin(int b_min) { this->b_min = b_min; }
@@ -75,8 +81,8 @@ public:
     void setSMin(int s_min) { this->s_min = s_min; }
     void setSMax(int s_max) { this->s_max = s_max; }
 
-    void setWidth(int width);
-    void setHeight(int height);
+    void setY(int y);
+    void setX(int x);
     void setSpace(std::vector<std::vector<bool>> space) { this->space = space; }
 
     void setLivingCells(std::set<Cell> living_cells);
@@ -85,10 +91,10 @@ public:
     void draw()
     {
         std::cout << std::endl;
-        for (auto a : space)
+        for (const auto &line : space)
         {
-            for (auto c : a)
-                std::cout << c << " ";
+            for (bool cell : line)
+                std::cout << (cell ? "*" : ".") << " ";
             std::cout << std::endl;
         }
     }

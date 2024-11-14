@@ -1,23 +1,32 @@
 #include "gui/Grapher.h"
 
 // Constructor
-Grapher::Grapher(int width, int height, std::string tittle, Color backgroundColor, GameController controller)
+Grapher::Grapher(int width, int height, std::string tittle, Color backgroundColor, GameController &controller)
     : width(width), height(height), tittle(tittle), backgroundColor(backgroundColor),
       controller(controller), window(VideoMode(width, height), tittle, Style::Close),
-      board(400, 400, Vector2f(10, 10), Color(0, 255, 100), controller),
-      buttons(310, 70, Vector2f(420, 10), Color(100, 255, 255), controller)
+      board(1000, 880, Vector2f(70, 10), Color(0, 255, 100), controller),
+      start_button(50, 50, Vector2f(10, 10), Color(0, 0, 0), "./resources/images/start.png"),
+      step_button(50, 50, Vector2f(10, 70), Color(0, 0, 0), "./resources/images/step.png"),
+      reset_button(50, 50, Vector2f(10, 130), Color(0, 0, 0), "./resources/images/reset.png"),
+      save_button(50, 50, Vector2f(10, 190), Color(0, 0, 0), "./resources/images/save.png"),
+      load_button(50, 50, Vector2f(10, 250), Color(0, 0, 0), "./resources/images/load.png")
 {
-    loadFont();
-    setScale();
 
+    if (!this->font.loadFromFile(font_route))
+        std::cout << "Error in Grapher.loadFont. Can´t load font from " << font_route << std::endl;
+
+    // Function assignation
+    start_button.setButtonFunction([this]()
+                                   { startFunction(); });
+    reset_button.setButtonFunction([this]()
+                                   { resetFunction(); });
+    step_button.setButtonFunction([this]()
+                                  { stepFunction(); });
+    save_button.setButtonFunction([this]()
+                                  { saveFunction(); });
+    load_button.setButtonFunction([this]()
+                                  { loadFunction(); });
 }
-
-void Grapher::setScale()
-{
-    x_scale = width / static_cast<float>(controller.getWidth());
-    y_scale = height / static_cast<float>(controller.getHeight());
-}
-
 
 // Main Loop
 void Grapher::mainLoop()
@@ -42,19 +51,14 @@ void Grapher::mainLoop()
                 sf::Vector2i mouse_pos(event.mouseButton.x, event.mouseButton.y);
 
                 // Click en cuadricula
-                if (fun_in(mouse_pos.x, board.getRelativePosition().x, board.getRelativePosition().x + board.getWidth()) &&
-                    fun_in(mouse_pos.y, board.getRelativePosition().y, board.getRelativePosition().y + board.getHeight()))
-                {
-                    board.clickEvent(mouse_pos, controller);
-                }
-                // Click en botones
-                else if (fun_in(mouse_pos.x, buttons.getRelativePosition().x, buttons.getRelativePosition().x + buttons.getWidth()) &&
-                         fun_in(mouse_pos.y, buttons.getRelativePosition().y, buttons.getRelativePosition().y + buttons.getHeight()))
-                    buttons.clickEvent(mouse_pos, controller);
+                board.clickEvent(mouse_pos);
 
-                else
-                    controller.draw();
-                // Click en graficas
+                // Click in buttons
+                start_button.triggerFunction(mouse_pos);
+                step_button.triggerFunction(mouse_pos);
+                reset_button.triggerFunction(mouse_pos);
+                save_button.triggerFunction(mouse_pos);
+                load_button.triggerFunction(mouse_pos);
             }
         }
 
@@ -71,17 +75,16 @@ void Grapher::mainLoop()
 
         // Frames
         board.draw(window);
-        buttons.draw(window);
+
+        // Buttons
+        start_button.draw(window);
+        reset_button.draw(window);
+        step_button.draw(window);
+        save_button.draw(window);
+        load_button.draw(window);
 
         window.display();
     }
-}
-
-// Functions
-void Grapher::loadFont()
-{
-    if (!this->font.loadFromFile(font_route))
-        std::cout << "Error in Grapher.loadFont. Can´t load font from " << font_route << std::endl;
 }
 
 // Drawers
@@ -94,4 +97,36 @@ void Grapher::drawLine(Vector2f pos_1, Vector2f pos_2, Color color)
     line[0].color = line[1].color = color;
 
     this->lines.push_back(line);
+}
+
+// Button functions
+void Grapher::startFunction()
+{
+    std::cout << "Button start!" << std::endl;
+    for (int i = 0; i < 30; i++)
+        stepFunction();
+    
+}
+
+void Grapher::stepFunction()
+{
+    std::set<Cell> changes = controller.step();
+    for (Cell cell : changes)
+        board.changeColor(cell.y, cell.x);
+}
+
+void Grapher::resetFunction()
+{
+    std::cout << "Button reset!" << std::endl;
+}
+
+void Grapher::saveFunction()
+{
+
+    std::cout << "Button save!" << std::endl;
+}
+
+void Grapher::loadFunction()
+{
+    std::cout << "Button load!" << std::endl;
 }
