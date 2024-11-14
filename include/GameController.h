@@ -9,6 +9,7 @@
 #include <functional>
 
 #include "Functions.h"
+#include "Randomizer.h"
 
 struct Cell
 {
@@ -25,6 +26,9 @@ struct Cell
 class GameController
 {
 private:
+    // Classes
+    Randomizer randomizer;
+
     // Evolution rules
     int b_min = 3;
     int b_max = 3;
@@ -41,7 +45,6 @@ private:
     std::set<Cell> death_cells;  // death (near to alive)
 
     // Functions
-
     void updateSpace();
 
     // Neighbour functions
@@ -61,6 +64,8 @@ public:
 
     void resizeSpace();
     void cleanSpace();
+
+    void randomizeSpace();
 
     // Getters
     int getBMin() const { return b_min; }
@@ -83,7 +88,7 @@ public:
 
     void setY(int y);
     void setX(int x);
-    void setSpace(std::vector<std::vector<bool>> space) { this->space = space; }
+    void setSpace(std::vector<std::vector<bool>> space);
 
     void setLivingCells(std::set<Cell> living_cells);
 

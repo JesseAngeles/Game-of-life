@@ -2,14 +2,17 @@
 
 // Constructor
 Grapher::Grapher(int width, int height, std::string tittle, Color backgroundColor, GameController &controller)
-    : width(width), height(height), tittle(tittle), backgroundColor(backgroundColor),
+    : width(width), height(height), tittle(tittle), backgroundColor(backgroundColor), file(),
       controller(controller), window(VideoMode(width, height), tittle, Style::Close),
       board(1000, 880, Vector2f(70, 10), Color(0, 255, 100), controller),
-      start_button(50, 50, Vector2f(10, 10), Color(0, 0, 0), "./resources/images/start.png"),
-      step_button(50, 50, Vector2f(10, 70), Color(0, 0, 0), "./resources/images/step.png"),
-      reset_button(50, 50, Vector2f(10, 130), Color(0, 0, 0), "./resources/images/reset.png"),
-      save_button(50, 50, Vector2f(10, 190), Color(0, 0, 0), "./resources/images/save.png"),
-      load_button(50, 50, Vector2f(10, 250), Color(0, 0, 0), "./resources/images/load.png")
+      start_button(50, 50, Vector2f(10, 10), Color(0, 0, 0), START_ROUTE),
+      increase_speed_button(20, 20, Vector2f(10, 70), {0, 0, 0}, INCREASE_ROUTE),
+      decrease_speed_button(20, 20, Vector2f(40, 70), {0, 0, 0}, DECREASE_ROUTE),
+      step_button(50, 50, Vector2f(10, 100), Color(0, 0, 0), STEP_ROUTE),
+      reset_button(50, 50, Vector2f(10, 160), Color(0, 0, 0), RESET_ROUTE),
+      random_button(50, 50, Vector2f(10, 220), Color(0, 0, 0), RANDOM_ROUTE),
+      save_button(50, 50, Vector2f(10, 280), Color(0, 0, 0), SAVE_ROUTE),
+      load_button(50, 50, Vector2f(10, 340), Color(0, 0, 0), LOAD_ROUTE)
 {
 
     if (!this->font.loadFromFile(font_route))
@@ -18,10 +21,19 @@ Grapher::Grapher(int width, int height, std::string tittle, Color backgroundColo
     // Function assignation
     start_button.setButtonFunction([this]()
                                    { startFunction(); });
-    reset_button.setButtonFunction([this]()
-                                   { resetFunction(); });
+
+    increase_speed_button.setButtonFunction([this]()
+                                            { increaseSpeedFunction(); });
+
+    decrease_speed_button.setButtonFunction([this]()
+                                            { decreaseSpeedFunction(); });
+
     step_button.setButtonFunction([this]()
                                   { stepFunction(); });
+    reset_button.setButtonFunction([this]()
+                                   { resetFunction(); });
+    random_button.setButtonFunction([this]()
+                                    { randomFunction(); });
     save_button.setButtonFunction([this]()
                                   { saveFunction(); });
     load_button.setButtonFunction([this]()
@@ -55,11 +67,21 @@ void Grapher::mainLoop()
 
                 // Click in buttons
                 start_button.triggerFunction(mouse_pos);
+                increase_speed_button.triggerFunction(mouse_pos);
+                decrease_speed_button.triggerFunction(mouse_pos);
                 step_button.triggerFunction(mouse_pos);
                 reset_button.triggerFunction(mouse_pos);
+                random_button.triggerFunction(mouse_pos);
                 save_button.triggerFunction(mouse_pos);
                 load_button.triggerFunction(mouse_pos);
             }
+        }
+
+        delta_time += clock.restart().asMilliseconds();
+        if (is_running && delta_time >= speed)
+        {
+            stepFunction();
+            delta_time = 0;
         }
 
         window.clear(backgroundColor);
@@ -78,8 +100,11 @@ void Grapher::mainLoop()
 
         // Buttons
         start_button.draw(window);
+        increase_speed_button.draw(window);
+        decrease_speed_button.draw(window);
         reset_button.draw(window);
         step_button.draw(window);
+        random_button.draw(window);
         save_button.draw(window);
         load_button.draw(window);
 
@@ -102,10 +127,19 @@ void Grapher::drawLine(Vector2f pos_1, Vector2f pos_2, Color color)
 // Button functions
 void Grapher::startFunction()
 {
-    std::cout << "Button start!" << std::endl;
-    for (int i = 0; i < 30; i++)
-        stepFunction();
-    
+    std::cout << "speed: " << speed << std::endl;
+    is_running = !is_running;
+    start_button.setTexture((is_running) ? PAUSE_ROUTE : START_ROUTE);
+}
+
+void Grapher::increaseSpeedFunction()
+{
+    speed /= 1.5;
+}
+
+void Grapher::decreaseSpeedFunction()
+{
+    speed *= 1.5;
 }
 
 void Grapher::stepFunction()
@@ -117,16 +151,29 @@ void Grapher::stepFunction()
 
 void Grapher::resetFunction()
 {
-    std::cout << "Button reset!" << std::endl;
+    controller.cleanSpace();
+    board.resetSpace();
+}
+
+void Grapher::randomFunction()
+{
+    controller.randomizeSpace();
+
+    board.resetSpace();
+    for (Cell cell : controller.getLivingCells())
+        board.changeColor(cell.y, cell.x);
 }
 
 void Grapher::saveFunction()
 {
-
-    std::cout << "Button save!" << std::endl;
+    file.saveFile(controller.getSpace());
 }
 
 void Grapher::loadFunction()
 {
-    std::cout << "Button load!" << std::endl;
+    controller.setSpace(file.readFile());
+
+    board.resetSpace();
+    for (Cell cell : controller.getLivingCells())
+        board.changeColor(cell.y, cell.x);
 }

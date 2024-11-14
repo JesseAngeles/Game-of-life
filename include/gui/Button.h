@@ -31,7 +31,7 @@ protected:
 
 public:
     // Constructor
-    Button(int width, int height, Vector2f relative_pos, Color background_color, String content);
+    Button(int width, int height, Vector2f relative_pos, Color background_color, std::string content);
 
     // Drawers
     void draw(RenderWindow &window);
@@ -47,6 +47,7 @@ public:
     Vector2f getRelativePosition() const { return relative_pos; }
 
     // Setters
+    void setTexture(std::string content);
     void setButtonFunction(std::function<void()> buttonFunction) { this->buttonFunction = buttonFunction; }
 };
 

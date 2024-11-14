@@ -9,6 +9,18 @@
 #include "GameController.h"
 #include "FrameBoard.h"
 #include "Button.h"
+#include "FileController.h"
+
+#define FONT_ROUTE "./resources/fonts/Roboto-Medium.ttf"
+#define START_ROUTE "./resources/images/start.png"
+#define INCREASE_ROUTE "./resources/images/increase.png"
+#define DECREASE_ROUTE "./resources/images/decrease.png"
+#define PAUSE_ROUTE "./resources/images/pause.png"
+#define STEP_ROUTE "./resources/images/step.png"
+#define RESET_ROUTE "./resources/images/reset.png"
+#define RANDOM_ROUTE "./resources/images/random.png"
+#define SAVE_ROUTE "./resources/images/save.png"
+#define LOAD_ROUTE "./resources/images/load.png"
 
 using namespace sf;
 
@@ -21,13 +33,18 @@ private:
     std::string tittle;
     Color backgroundColor;
     Font font;
+    std::string font_route = FONT_ROUTE;
+    
+    bool is_running = false;
+    float delta_time = 0.0;
+    float speed = 500;
 
-    std::string font_route = "./resources/fonts/Roboto-Medium.ttf";
     // Frames
     FrameBoard board;
 
-    // Game Controller
+    // Classes
     GameController &controller;
+    FileController file;
 
     // Lines
     std::vector<VertexArray> axes;
@@ -35,15 +52,21 @@ private:
 
     // Buttons
     Button start_button;
+    Button increase_speed_button;
+    Button decrease_speed_button;
     Button step_button;
     Button reset_button;
+    Button random_button;
     Button save_button;
     Button load_button;
 
     // Button Functions
     void startFunction();
+    void increaseSpeedFunction();
+    void decreaseSpeedFunction();
     void stepFunction();
     void resetFunction();
+    void randomFunction();
     void saveFunction();
     void loadFunction();
 

@@ -2,7 +2,7 @@
 
 #include "Functions.h"
 
-Button::Button(int width, int height, Vector2f relative_pos, Color background_color, String content)
+Button::Button(int width, int height, Vector2f relative_pos, Color background_color, std::string content)
     : width(width), height(height), relative_pos(relative_pos), background_color(background_color)
 {
     // Draw background
@@ -55,4 +55,19 @@ void Button::draw(RenderWindow &window)
     window.draw(button);
     if (!button.getTexture())
         window.draw(text);
+}
+
+void Button::setTexture(std::string content)
+{
+    if (texture.loadFromFile(content))
+    {
+        // Asignar la textura al RectangleShape
+        button.setTexture(&texture);
+
+        // Obtener el tamaño de la textura cargada
+        Vector2u textureSize = texture.getSize();
+
+        // Ajustar la textura al tamaño del RectangleShape
+        button.setTextureRect(IntRect(0, 0, textureSize.x, textureSize.y));
+    }
 }

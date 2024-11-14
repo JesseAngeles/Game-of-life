@@ -2,7 +2,7 @@
 
 // Controlador
 GameController::GameController(int y, int x)
-    : y(y), x(x)
+    : y(y), x(x), randomizer()
 {
     resizeSpace();
     cleanSpace();
@@ -18,7 +18,6 @@ bool GameController::transition(Cell cell)
     else
         return fun_in(neightbourhood, b_min, b_max);
 }
-
 
 // Neighbour functions
 
@@ -117,6 +116,16 @@ void GameController::cleanSpace()
 {
     for (std::vector<bool> &row : space)
         std::fill(row.begin(), row.end(), false);
+    living_cells.clear();
+    death_cells.clear();
+}
+
+void GameController::randomizeSpace()
+{
+    for (int i = 0; i < space.size(); i++)
+        for (int j = 0; j < space[i].size(); j++)
+            if (round(randomizer.generate(0, 1)))
+                switchCell({i, j});
 }
 
 // Setters
@@ -132,6 +141,16 @@ void GameController::setX(int x)
     this->x = x;
     resizeSpace();
     cleanSpace();
+}
+
+void GameController::setSpace(std::vector<std::vector<bool>> new_space)
+{
+    cleanSpace();
+
+    for (int i = 0; i < new_space.size(); i++)
+        for (int j = 0; j < new_space[i].size(); j++)
+            if (new_space[i][j])
+                switchCell({i, j});
 }
 
 void GameController::setLivingCells(std::set<Cell> living_cells)

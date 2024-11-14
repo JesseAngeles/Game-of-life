@@ -29,6 +29,7 @@ public:
     RectangleShape drawRectangle(int y, int x, Color color);
     void changeColor(int y, int x);
     void draw(RenderWindow &window);
+    void resetSpace();
 
     // Clicker functions
     void clickEvent(Vector2i position);

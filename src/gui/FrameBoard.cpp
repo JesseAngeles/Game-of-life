@@ -54,11 +54,19 @@ void FrameBoard::draw(RenderWindow &window)
     Frame::draw(window);
 
     for (std::vector<std::pair<RectangleShape, bool>> line : space)
-        for (std::pair<RectangleShape, bool> square : line)
-            window.draw(square.first);
+        for (std::pair<RectangleShape, bool> cell : line)
+            window.draw(cell.first);
 
     for (const VertexArray &axis : axes)
         window.draw(axis);
+}
+
+void FrameBoard::resetSpace()
+{
+    for (int i = 0; i < space.size(); i++)
+        for (int j = 0; j < space[i].size(); j++)
+            if (space[i][j].second)
+                changeColor(i, j);
 }
 
 // Clicker function
