@@ -2,6 +2,9 @@
 #define FRAME_GRAPHIC_H
 
 #include <vector>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
 
 #include "gui/Frame.h"
 #include "GameController.h"
@@ -13,13 +16,14 @@ private:
     float x_scale;
     float y_scale;
 
-    Vector2i max;
+    Vector2f max;
 
     // Elements
     std::vector<VertexArray> axes;
     std::vector<CircleShape> points;
-
     GameController &controller;
+    Text y_text, x_text;
+    Font font;
 
 public:
     // Constructor
@@ -27,14 +31,17 @@ public:
 
     // Drawers
     void drawAxes();
+    void drawLabels();
+    // void drawTexts();
     void drawCircleShape(float x, float y, float radius, Color color);
     void draw(RenderWindow &window);
 
     // Getters
-    Vector2i getMax() const { return max; }
+    Vector2f getMax() const { return max; }
 
     // Setters
-    void setMax(Vector2i max);
+    void setFont(Font font) { this->font = font; }
+    void setMax(Vector2f max);
 };
 
 #endif // FRAME_GRAPHIC_H

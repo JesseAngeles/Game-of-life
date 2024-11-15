@@ -4,39 +4,49 @@ FrameGraphic::FrameGraphic(int width, int height, Vector2f relative_pos, Color b
     : Frame(width, height, relative_pos, background_color), controller(controller)
 {
     drawAxes();
+    drawLabels();
 }
 
 // Drawers
 void FrameGraphic::drawAxes()
 {
     axes.clear();
-    
-    float margin_x = std::min(10.0f, width / 10.0f);
-    float margin_y = std::min(10.0f, height / 10.0f);
 
     VertexArray x_axis(Lines, 2);
-    x_axis[0].position = Vector2f(relative_pos.x + margin_x, height + relative_pos.y - margin_y);
-    x_axis[1].position = Vector2f(width + relative_pos.x - margin_x, height + relative_pos.y - margin_y);
+    x_axis[0].position = Vector2f(relative_pos.x, height + relative_pos.y);
+    x_axis[1].position = Vector2f(relative_pos.x + width, height + relative_pos.y);
     x_axis[0].color = x_axis[1].color = Color(0, 0, 0);
 
     VertexArray y_axis(Lines, 2);
-    y_axis[0].position = Vector2f(relative_pos.x + margin_x, relative_pos.y + margin_y);
-    y_axis[1].position = Vector2f(relative_pos.x + margin_x, height + relative_pos.y - margin_y);
+    y_axis[0].position = Vector2f(relative_pos.x, relative_pos.y);
+    y_axis[1].position = Vector2f(relative_pos.x, height + relative_pos.y);
     y_axis[0].color = y_axis[1].color = Color(0, 0, 0);
 
     axes.push_back(x_axis);
     axes.push_back(y_axis);
 }
 
+void FrameGraphic::drawLabels()
+{
+    y_text.setFont(font);
+    y_text.setString("Y: ");
+    y_text.setCharacterSize(20);
+    y_text.setFillColor(Color{0, 0, 0}); 
+    y_text.setPosition(relative_pos.x, relative_pos.y - 20);
+
+    x_text.setFont(font); 
+    x_text.setString("X: ");
+    x_text.setCharacterSize(20);
+    x_text.setFillColor(Color{0, 0, 0});
+    x_text.setPosition(relative_pos.x + width - 50, relative_pos.y + height);
+}
+
 void FrameGraphic::drawCircleShape(float x, float y, float radius, Color color)
 {
     CircleShape circle(radius);
 
-    float margin_x = std::min(10.0f, width / 10.0f);
-    float margin_y = std::min(10.0f, height / 10.0f);
-
-    float posX = relative_pos.x + margin_x + x * x_scale;
-    float posY = relative_pos.y + height - margin_y - max.y; //y * y_scale;
+    float posX = relative_pos.x + x * x_scale;
+    float posY = relative_pos.y + height - y * y_scale; 
 
     circle.setPosition(posX, posY);
     circle.setFillColor(color);
@@ -54,20 +64,22 @@ void FrameGraphic::draw(RenderWindow &window)
 
     for (CircleShape point : points)
         window.draw(point);
+
+    window.draw(y_text);
+    window.draw(x_text);
 }
 
 // Setters
-void FrameGraphic::setMax(Vector2i max)
+void FrameGraphic::setMax(Vector2f max)
 {
     this->max = max;
 
-    // Ajustar el margen proporcional al tamaño máximo en cada eje
-    float margin_x = std::min(10.0f, width / 10.0f);
-    float margin_y = std::min(10.0f, height / 10.0f);
+    y_text.setString("Y:" + std::to_string(max.y));
+    x_text.setString("X:" + std::to_string(max.x));
 
     // Calcular escalas
-    this->x_scale = (width - margin_x * 2) / static_cast<float>(max.x + 1);
-    this->y_scale = (height - margin_y * 2) / static_cast<float>(max.y + 1);
+    this->x_scale = (width) / (max.x);
+    this->y_scale = (height) / (max.y);
 
     points.clear();
 }

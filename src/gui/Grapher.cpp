@@ -6,8 +6,8 @@ Grapher::Grapher(int width, int height, std::string tittle, Color backgroundColo
       controller(controller), window(VideoMode(width, height), tittle, Style::Close),
 
       board(1000, 880, Vector2f(70, 10), Color(0, 255, 100), controller),
-      lineal(500, 300, Vector2f(1080, 420), {255, 255, 255}, controller),
-      logarithm(500, 300, Vector2f(1080, 10), {255, 255, 255}, controller),
+      lineal(500, 300, Vector2f(1080, 30), {255, 255, 255}, controller),
+      logarithm(500, 300, Vector2f(1080, 450), {255, 255, 255}, controller),
 
       start_button(50, 50, Vector2f(10, 10), Color(0, 0, 0), START_ROUTE),
       increase_speed_button(20, 20, Vector2f(10, 70), {0, 0, 0}, INCREASE_ROUTE),
@@ -22,6 +22,9 @@ Grapher::Grapher(int width, int height, std::string tittle, Color backgroundColo
 
     if (!this->font.loadFromFile(font_route))
         std::cout << "Error in Grapher.loadFont. Can´t load font from " << font_route << std::endl;
+
+    lineal.setFont(this->font);
+    logarithm.setFont(this->font);
 
     // Function assignation
     start_button.setButtonFunction([this]()
@@ -139,7 +142,6 @@ void Grapher::drawLine(Vector2f pos_1, Vector2f pos_2, Color color)
 // Button functions
 void Grapher::startFunction()
 {
-    std::cout << "speed: " << speed << std::endl;
     is_running = !is_running;
     start_button.setTexture((is_running) ? PAUSE_ROUTE : START_ROUTE);
 }
@@ -161,6 +163,8 @@ void Grapher::stepFunction()
         board.changeColor(cell.y, cell.x);
 
     population.push_back(controller.getLivingCells().size());
+
+    graphFunction();
 }
 
 void Grapher::resetFunction()
@@ -189,6 +193,8 @@ void Grapher::saveFunction()
 void Grapher::loadFunction()
 {
     controller.setSpace(file.readFile());
+    population.clear();
+    controller.setCount(0);
 
     board.resetSpace();
     for (Cell cell : controller.getLivingCells())
@@ -197,17 +203,12 @@ void Grapher::loadFunction()
 
 void Grapher::graphFunction()
 {
-    std::cout << "max: " << *max_element(population.begin(), population.end()) << "\n";
-
-    lineal.setMax(Vector2i(*max_element(population.begin(), population.end()), population.size()));
-    logarithm.setMax(Vector2i(*max_element(population.begin(), population.end()), population.size()));
+    lineal.setMax(Vector2f(population.size(), *max_element(population.begin(), population.end())));
+    logarithm.setMax(Vector2f(population.size(), log10(*max_element(population.begin(), population.end()))));
 
     for (int i = 0; i < population.size(); i++)
     {
         lineal.drawCircleShape(i, (population[i]), 3, {255, 0, 0});
-        logarithm.drawCircleShape(i, (population[i]), 3, {255, 0, 0});
-
-        // std::cout << "time: " << i << "\n";
-        // std::cout << "population: " << population[i] << "\n";
+        logarithm.drawCircleShape(i, log10(population[i]), 3, {255, 0, 0});
     }
 }
