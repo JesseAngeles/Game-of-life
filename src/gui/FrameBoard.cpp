@@ -56,7 +56,9 @@ void FrameBoard::draw(RenderWindow &window)
 
     for (std::vector<std::pair<RectangleShape, bool>> line : space)
         for (std::pair<RectangleShape, bool> cell : line)
-            window.draw(cell.first);
+            if (fun_in(cell.first.getPosition().x + x_scale, relative_pos.x + 1, relative_pos.x + width) &&
+                fun_in(cell.first.getPosition().y + y_scale, relative_pos.y + 1, relative_pos.y + height))
+                    window.draw(cell.first);
 }
 
 void FrameBoard::resetSpace()
@@ -87,6 +89,8 @@ void FrameBoard::zoom(bool in)
             space[i][j].first.setPosition({j * x_scale + relative_pos.x, i * y_scale + relative_pos.y});
             space[i][j].first.setSize({x_scale, y_scale});
         }
+
+    init_pos.x = init_pos.y = 0;
 }
 
 void FrameBoard::moveHorizontal(bool right)

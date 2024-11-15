@@ -14,4 +14,4 @@ g++ -c -I./include main.cpp                  -o build/main.o
 
 g++ build/Functions.o build/Randomizer.o build/tinyfiledialogs.o build/FileController.o build/GameController.o build/Grapher.o build/Frame.o build/Button.o build/FrameBoard.o build/FrameGraphic.o build/main.o -o build/main.exe -Iinclude -lsfml-graphics -lsfml-window -lsfml-system
 
-./build/main.exe
+./build/main.exe 100 100

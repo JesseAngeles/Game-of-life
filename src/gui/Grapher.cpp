@@ -6,8 +6,8 @@ Grapher::Grapher(int width, int height, std::string tittle, Color backgroundColo
       controller(controller), window(VideoMode(width, height), tittle, Style::Close),
 
       board(1000, 880, Vector2f(70, 10), Color(100, 100, 100), controller),
-      lineal(500, 300, Vector2f(1080, 30), {255, 255, 255}, controller),
-      logarithm(500, 300, Vector2f(1080, 450), {255, 255, 255}, controller),
+      lineal(500, 300, Vector2f(1080, 170), {255, 255, 255}, controller),
+      logarithm(500, 300, Vector2f(1080, 570), {255, 255, 255}, controller),
 
       start_button(50, 50, Vector2f(10, 10), Color(0, 0, 0), START_ROUTE),
       increase_speed_button(20, 20, Vector2f(10, 70), {0, 0, 0}, INCREASE_ROUTE),
@@ -18,12 +18,9 @@ Grapher::Grapher(int width, int height, std::string tittle, Color backgroundColo
       save_button(50, 50, Vector2f(10, 280), Color(0, 0, 0), SAVE_ROUTE),
       load_button(50, 50, Vector2f(10, 340), Color(0, 0, 0), LOAD_ROUTE),
       graph_button(50, 50, Vector2f(10, 400), Color(0, 0, 0), GRAPH_ROUTE),
-      zoom_in_button(20, 20, Vector2f(10, 460), {0, 0, 0}, ZOOM_IN_ROUTE),
-      zoom_out_button(20, 20, Vector2f(40, 460), {0, 0, 0}, ZOOM_OUT_ROUTE),
-      left_button(20, 20, Vector2f(10, 490), {0, 0, 0}, LEFT_ROUTE),
-      right_button(20, 20, Vector2f(40, 490), {0, 0, 0}, RIGHT_ROUTE),
-      up_button(20, 20, Vector2f(10, 520), {0, 0, 0}, UP_ROUTE),
-      down_button(20, 20, Vector2f(40, 520), {0, 0, 0}, DOWN_ROUTE)
+      bull_button(50, 50, Vector2f(10, 460), {0, 0, 0}, NO_BULL_ROUTE),
+      zoom_in_button(20, 20, Vector2f(10, 520), {0, 0, 0}, ZOOM_IN_ROUTE),
+      zoom_out_button(20, 20, Vector2f(40, 520), {0, 0, 0}, ZOOM_OUT_ROUTE)
 {
 
     if (!this->font.loadFromFile(font_route))
@@ -31,6 +28,30 @@ Grapher::Grapher(int width, int height, std::string tittle, Color backgroundColo
 
     lineal.setFont(this->font);
     logarithm.setFont(this->font);
+
+    count_text.setFont(font);
+    count_text.setString("Population");
+    count_text.setCharacterSize(20);
+    count_text.setFillColor(Color{0, 0, 0});
+    count_text.setPosition(1080, 10);
+
+    time_text.setFont(font);
+    time_text.setString("Time");
+    time_text.setCharacterSize(20);
+    time_text.setFillColor(Color{0, 0, 0});
+    time_text.setPosition(1080, 40);
+
+    lineal_text.setFont(font);
+    lineal_text.setString("LINEAL");
+    lineal_text.setCharacterSize(20);
+    lineal_text.setFillColor(Color{0, 0, 0});
+    lineal_text.setPosition(1080, 120);
+
+    logarithm_text.setFont(font);
+    logarithm_text.setString("LOGARITHM");
+    logarithm_text.setCharacterSize(20);
+    logarithm_text.setFillColor(Color{0, 0, 0});
+    logarithm_text.setPosition(1080, 520);
 
     // Function assignation
     start_button.setButtonFunction([this]()
@@ -55,24 +76,16 @@ Grapher::Grapher(int width, int height, std::string tittle, Color backgroundColo
 
     graph_button.setButtonFunction([this]()
                                    { graphFunction(); });
-
+    
+    bull_button.setButtonFunction([this]()
+                                   { bullFunction(); });
+    
     zoom_in_button.setButtonFunction([this]()
                                      { zoomInFunction(); });
 
     zoom_out_button.setButtonFunction([this]()
                                       { zoomOutFunction(); });
 
-    left_button.setButtonFunction([this]()
-                                  { leftFunction(); });
-
-    right_button.setButtonFunction([this]()
-                                   { rightFunction(); });
-
-    up_button.setButtonFunction([this]()
-                                { upFunction(); });
-
-    down_button.setButtonFunction([this]()
-                                  { downFunction(); });
 }
 
 // Main Loop
@@ -110,13 +123,22 @@ void Grapher::mainLoop()
                 save_button.triggerFunction(mouse_pos);
                 load_button.triggerFunction(mouse_pos);
                 graph_button.triggerFunction(mouse_pos);
+                bull_button.triggerFunction(mouse_pos);
                 zoom_in_button.triggerFunction(mouse_pos);
                 zoom_out_button.triggerFunction(mouse_pos);
-                left_button.triggerFunction(mouse_pos);
-                right_button.triggerFunction(mouse_pos);
-                up_button.triggerFunction(mouse_pos);
-                down_button.triggerFunction(mouse_pos);
             }
+
+            if (event.type == Event::KeyPressed && event.key.code == Keyboard::Left)
+                board.moveHorizontal(true);
+
+            if (event.type == Event::KeyPressed && event.key.code == Keyboard::Right)
+                board.moveHorizontal(false);
+
+            if (event.type == Event::KeyPressed && event.key.code == Keyboard::Up)
+                board.moveVertical(true);
+
+            if (event.type == Event::KeyPressed && event.key.code == Keyboard::Down)
+                board.moveVertical(false);
         }
 
         delta_time += clock.restart().asMilliseconds();
@@ -142,6 +164,12 @@ void Grapher::mainLoop()
         lineal.draw(window);
         logarithm.draw(window);
 
+        // Text
+        window.draw(lineal_text);
+        window.draw(logarithm_text);
+        window.draw(count_text);
+        window.draw(time_text);
+
         // Buttons
         start_button.draw(window);
         increase_speed_button.draw(window);
@@ -152,12 +180,9 @@ void Grapher::mainLoop()
         save_button.draw(window);
         load_button.draw(window);
         graph_button.draw(window);
+        bull_button.draw(window);
         zoom_in_button.draw(window);
         zoom_out_button.draw(window);
-        left_button.draw(window);
-        right_button.draw(window);
-        up_button.draw(window);
-        down_button.draw(window);
 
         window.display();
     }
@@ -200,7 +225,8 @@ void Grapher::stepFunction()
 
     population.push_back(controller.getLivingCells().size());
 
-    graphFunction();
+    time_text.setString("Time: " + std::to_string(controller.getCount()));
+    count_text.setString("Population: " + std::to_string(controller.getLivingCells().size()));
 }
 
 void Grapher::resetFunction()
@@ -210,6 +236,12 @@ void Grapher::resetFunction()
 
     controller.cleanSpace();
     board.resetSpace();
+
+    time_text.setString("Time: 0");
+    count_text.setString("Population: 0");
+
+    is_running = false;
+    start_button.setTexture(START_ROUTE);
 }
 
 void Grapher::randomFunction()
@@ -249,6 +281,11 @@ void Grapher::graphFunction()
     }
 }
 
+void Grapher::bullFunction()
+{
+    controller.switchBull();
+    bull_button.setTexture((controller.getBull() ? BULL_ROUTE : NO_BULL_ROUTE));
+}
 
 void Grapher::zoomInFunction()
 {

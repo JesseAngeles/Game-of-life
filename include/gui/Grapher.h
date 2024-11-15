@@ -26,10 +26,8 @@
 #define GRAPH_ROUTE "./resources/images/graph.png"
 #define ZOOM_IN_ROUTE "./resources/images/zoom_in.png"
 #define ZOOM_OUT_ROUTE "./resources/images/zoom_out.png"
-#define LEFT_ROUTE "./resources/images/left.png"
-#define RIGHT_ROUTE "./resources/images/right.png"
-#define UP_ROUTE "./resources/images/up.png"
-#define DOWN_ROUTE "./resources/images/down.png"
+#define BULL_ROUTE "./resources/images/bull.png"
+#define NO_BULL_ROUTE "./resources/images/no_bull.png"
 
 using namespace sf;
 
@@ -43,7 +41,7 @@ private:
     Color backgroundColor;
     Font font;
     std::string font_route = FONT_ROUTE;
-    
+
     bool is_running = false;
     float delta_time = 0.0;
     float speed = 500;
@@ -63,6 +61,12 @@ private:
     std::vector<VertexArray> axes;
     std::vector<VertexArray> lines;
 
+    // Text
+    Text count_text;
+    Text time_text;
+    Text lineal_text;
+    Text logarithm_text;
+
     // Buttons
     Button start_button;
     Button increase_speed_button;
@@ -73,14 +77,11 @@ private:
     Button save_button;
     Button load_button;
     Button graph_button;
+    Button bull_button;
     Button zoom_in_button;
     Button zoom_out_button;
-    Button left_button;
-    Button right_button;
-    Button up_button;
-    Button down_button;
 
-    // Button Functions
+    // Functions
     void startFunction();
     void increaseSpeedFunction();
     void decreaseSpeedFunction();
@@ -90,12 +91,13 @@ private:
     void saveFunction();
     void loadFunction();
     void graphFunction();
+    void bullFunction();
     void zoomInFunction();
-    void zoomOutFunction(); 
-    void leftFunction(); 
-    void rightFunction(); 
-    void upFunction(); 
-    void downFunction(); 
+    void zoomOutFunction();
+    void leftFunction();
+    void rightFunction();
+    void upFunction();
+    void downFunction();
 
     // Rectangles (alive cells)
     std::vector<std::pair<RectangleShape, Vector2i>> rectangles;

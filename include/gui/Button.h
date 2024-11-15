@@ -49,6 +49,7 @@ public:
     // Setters
     void setTexture(std::string content);
     void setButtonFunction(std::function<void()> buttonFunction) { this->buttonFunction = buttonFunction; }
+    void setColor(Color color) { button.setFillColor(color); }
 };
 
 #endif // BUTTON_H

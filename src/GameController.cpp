@@ -32,6 +32,19 @@ void GameController::forEachNeighbour(Cell cell, std::function<void(int, int)> c
 
             int ny = cell.y + i;
             int nx = cell.x + j;
+
+            if (bull)
+            {
+                if (ny < 0)
+                    ny = y - 1;
+                if (ny >= y)
+                    ny = 0;
+                if (nx < 0)
+                    nx = x - 1;
+                if (nx >= x)
+                    nx = 0;
+            }
+
             if (fun_in(ny, 0, y - 1) && fun_in(nx, 0, x - 1))
                 callback(ny, nx);
         }
@@ -41,7 +54,7 @@ int GameController::countNeighbourhood(Cell cell)
 {
     int count = 0;
     forEachNeighbour(cell, [&](int ny, int nx)
-                     {
+                         {
         if (space[ny][nx])
             count++; });
 
@@ -51,7 +64,7 @@ int GameController::countNeighbourhood(Cell cell)
 void GameController::updateNear(Cell cell)
 {
     forEachNeighbour(cell, [&](int ny, int nx)
-                     {
+                         {
         if(!countNeighbourhood({ny, nx}))
             death_cells.erase({ny, nx}); });
 }
@@ -59,7 +72,7 @@ void GameController::updateNear(Cell cell)
 void GameController::setDeathCells(Cell cell)
 {
     forEachNeighbour(cell, [&](int ny, int nx)
-                     {
+                         {
         if (!space[ny][nx])
             death_cells.insert({ny, nx}); });
 }

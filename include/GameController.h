@@ -35,7 +35,8 @@ private:
     int s_min = 2;
     int s_max = 3;
 
-    int count;
+    int count = 0;
+    bool bull = false;
 
     // Regular space
     int y;
@@ -77,7 +78,9 @@ public:
 
     int getY() const { return y; }
     int getX() const { return x; }
+
     int getCount() const { return count; }
+    bool getBull() const { return bull; }
 
     std::vector<std::vector<bool>> getSpace() const { return space; }
 
@@ -92,7 +95,9 @@ public:
 
     void setY(int y);
     void setX(int x);
+
     void setCount(int count) { this->count = count; }
+    void switchBull() { bull = !bull; }
 
     void setSpace(std::vector<std::vector<bool>> space);
 
