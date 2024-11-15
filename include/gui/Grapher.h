@@ -5,11 +5,13 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <algorithm>
 
 #include "GameController.h"
 #include "FrameBoard.h"
 #include "Button.h"
 #include "FileController.h"
+#include "FrameGraphic.h"
 
 #define FONT_ROUTE "./resources/fonts/Roboto-Medium.ttf"
 #define START_ROUTE "./resources/images/start.png"
@@ -21,6 +23,7 @@
 #define RANDOM_ROUTE "./resources/images/random.png"
 #define SAVE_ROUTE "./resources/images/save.png"
 #define LOAD_ROUTE "./resources/images/load.png"
+#define GRAPH_ROUTE "./resources/images/graph.png"
 
 using namespace sf;
 
@@ -39,8 +42,12 @@ private:
     float delta_time = 0.0;
     float speed = 500;
 
+    std::vector<int> population;
+
     // Frames
     FrameBoard board;
+    FrameGraphic lineal;
+    FrameGraphic logarithm;
 
     // Classes
     GameController &controller;
@@ -59,6 +66,7 @@ private:
     Button random_button;
     Button save_button;
     Button load_button;
+    Button graph_button;
 
     // Button Functions
     void startFunction();
@@ -69,6 +77,7 @@ private:
     void randomFunction();
     void saveFunction();
     void loadFunction();
+    void graphFunction();
 
     // Rectangles (alive cells)
     std::vector<std::pair<RectangleShape, Vector2i>> rectangles;

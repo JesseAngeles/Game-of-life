@@ -35,6 +35,8 @@ private:
     int s_min = 2;
     int s_max = 3;
 
+    int count;
+
     // Regular space
     int y;
     int x;
@@ -75,6 +77,8 @@ public:
 
     int getY() const { return y; }
     int getX() const { return x; }
+    int getCount() const { return count; }
+
     std::vector<std::vector<bool>> getSpace() const { return space; }
 
     std::set<Cell> getLivingCells() const { return living_cells; }
@@ -88,6 +92,8 @@ public:
 
     void setY(int y);
     void setX(int x);
+    void setCount(int count) { this->count = count; }
+
     void setSpace(std::vector<std::vector<bool>> space);
 
     void setLivingCells(std::set<Cell> living_cells);

@@ -4,7 +4,11 @@
 Grapher::Grapher(int width, int height, std::string tittle, Color backgroundColor, GameController &controller)
     : width(width), height(height), tittle(tittle), backgroundColor(backgroundColor), file(),
       controller(controller), window(VideoMode(width, height), tittle, Style::Close),
+
       board(1000, 880, Vector2f(70, 10), Color(0, 255, 100), controller),
+      lineal(500, 300, Vector2f(1080, 420), {255, 255, 255}, controller),
+      logarithm(500, 300, Vector2f(1080, 10), {255, 255, 255}, controller),
+
       start_button(50, 50, Vector2f(10, 10), Color(0, 0, 0), START_ROUTE),
       increase_speed_button(20, 20, Vector2f(10, 70), {0, 0, 0}, INCREASE_ROUTE),
       decrease_speed_button(20, 20, Vector2f(40, 70), {0, 0, 0}, DECREASE_ROUTE),
@@ -12,7 +16,8 @@ Grapher::Grapher(int width, int height, std::string tittle, Color backgroundColo
       reset_button(50, 50, Vector2f(10, 160), Color(0, 0, 0), RESET_ROUTE),
       random_button(50, 50, Vector2f(10, 220), Color(0, 0, 0), RANDOM_ROUTE),
       save_button(50, 50, Vector2f(10, 280), Color(0, 0, 0), SAVE_ROUTE),
-      load_button(50, 50, Vector2f(10, 340), Color(0, 0, 0), LOAD_ROUTE)
+      load_button(50, 50, Vector2f(10, 340), Color(0, 0, 0), LOAD_ROUTE),
+      graph_button(50, 50, Vector2f(10, 400), Color(0, 0, 0), GRAPH_ROUTE)
 {
 
     if (!this->font.loadFromFile(font_route))
@@ -38,6 +43,9 @@ Grapher::Grapher(int width, int height, std::string tittle, Color backgroundColo
                                   { saveFunction(); });
     load_button.setButtonFunction([this]()
                                   { loadFunction(); });
+
+    graph_button.setButtonFunction([this]()
+                                   { graphFunction(); });
 }
 
 // Main Loop
@@ -74,6 +82,7 @@ void Grapher::mainLoop()
                 random_button.triggerFunction(mouse_pos);
                 save_button.triggerFunction(mouse_pos);
                 load_button.triggerFunction(mouse_pos);
+                graph_button.triggerFunction(mouse_pos);
             }
         }
 
@@ -97,6 +106,8 @@ void Grapher::mainLoop()
 
         // Frames
         board.draw(window);
+        lineal.draw(window);
+        logarithm.draw(window);
 
         // Buttons
         start_button.draw(window);
@@ -107,6 +118,7 @@ void Grapher::mainLoop()
         random_button.draw(window);
         save_button.draw(window);
         load_button.draw(window);
+        graph_button.draw(window);
 
         window.display();
     }
@@ -147,10 +159,15 @@ void Grapher::stepFunction()
     std::set<Cell> changes = controller.step();
     for (Cell cell : changes)
         board.changeColor(cell.y, cell.x);
+
+    population.push_back(controller.getLivingCells().size());
 }
 
 void Grapher::resetFunction()
 {
+    controller.setCount(0);
+    population.clear();
+
     controller.cleanSpace();
     board.resetSpace();
 }
@@ -176,4 +193,21 @@ void Grapher::loadFunction()
     board.resetSpace();
     for (Cell cell : controller.getLivingCells())
         board.changeColor(cell.y, cell.x);
+}
+
+void Grapher::graphFunction()
+{
+    std::cout << "max: " << *max_element(population.begin(), population.end()) << "\n";
+
+    lineal.setMax(Vector2i(*max_element(population.begin(), population.end()), population.size()));
+    logarithm.setMax(Vector2i(*max_element(population.begin(), population.end()), population.size()));
+
+    for (int i = 0; i < population.size(); i++)
+    {
+        lineal.drawCircleShape(i, (population[i]), 3, {255, 0, 0});
+        logarithm.drawCircleShape(i, (population[i]), 3, {255, 0, 0});
+
+        // std::cout << "time: " << i << "\n";
+        // std::cout << "population: " << population[i] << "\n";
+    }
 }

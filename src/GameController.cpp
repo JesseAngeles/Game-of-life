@@ -4,6 +4,7 @@
 GameController::GameController(int y, int x)
     : y(y), x(x), randomizer()
 {
+    count = 0;
     resizeSpace();
     cleanSpace();
 }
@@ -77,6 +78,8 @@ std::set<Cell> GameController::step()
 
     for (Cell cell : switch_cells)
         switchCell(cell);
+
+    count++;
 
     return switch_cells;
 }
