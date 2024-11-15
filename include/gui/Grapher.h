@@ -24,6 +24,12 @@
 #define SAVE_ROUTE "./resources/images/save.png"
 #define LOAD_ROUTE "./resources/images/load.png"
 #define GRAPH_ROUTE "./resources/images/graph.png"
+#define ZOOM_IN_ROUTE "./resources/images/zoom_in.png"
+#define ZOOM_OUT_ROUTE "./resources/images/zoom_out.png"
+#define LEFT_ROUTE "./resources/images/left.png"
+#define RIGHT_ROUTE "./resources/images/right.png"
+#define UP_ROUTE "./resources/images/up.png"
+#define DOWN_ROUTE "./resources/images/down.png"
 
 using namespace sf;
 
@@ -67,6 +73,12 @@ private:
     Button save_button;
     Button load_button;
     Button graph_button;
+    Button zoom_in_button;
+    Button zoom_out_button;
+    Button left_button;
+    Button right_button;
+    Button up_button;
+    Button down_button;
 
     // Button Functions
     void startFunction();
@@ -78,6 +90,12 @@ private:
     void saveFunction();
     void loadFunction();
     void graphFunction();
+    void zoomInFunction();
+    void zoomOutFunction(); 
+    void leftFunction(); 
+    void rightFunction(); 
+    void upFunction(); 
+    void downFunction(); 
 
     // Rectangles (alive cells)
     std::vector<std::pair<RectangleShape, Vector2i>> rectangles;

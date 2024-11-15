@@ -5,7 +5,7 @@ Grapher::Grapher(int width, int height, std::string tittle, Color backgroundColo
     : width(width), height(height), tittle(tittle), backgroundColor(backgroundColor), file(),
       controller(controller), window(VideoMode(width, height), tittle, Style::Close),
 
-      board(1000, 880, Vector2f(70, 10), Color(0, 255, 100), controller),
+      board(1000, 880, Vector2f(70, 10), Color(100, 100, 100), controller),
       lineal(500, 300, Vector2f(1080, 30), {255, 255, 255}, controller),
       logarithm(500, 300, Vector2f(1080, 450), {255, 255, 255}, controller),
 
@@ -17,7 +17,13 @@ Grapher::Grapher(int width, int height, std::string tittle, Color backgroundColo
       random_button(50, 50, Vector2f(10, 220), Color(0, 0, 0), RANDOM_ROUTE),
       save_button(50, 50, Vector2f(10, 280), Color(0, 0, 0), SAVE_ROUTE),
       load_button(50, 50, Vector2f(10, 340), Color(0, 0, 0), LOAD_ROUTE),
-      graph_button(50, 50, Vector2f(10, 400), Color(0, 0, 0), GRAPH_ROUTE)
+      graph_button(50, 50, Vector2f(10, 400), Color(0, 0, 0), GRAPH_ROUTE),
+      zoom_in_button(20, 20, Vector2f(10, 460), {0, 0, 0}, ZOOM_IN_ROUTE),
+      zoom_out_button(20, 20, Vector2f(40, 460), {0, 0, 0}, ZOOM_OUT_ROUTE),
+      left_button(20, 20, Vector2f(10, 490), {0, 0, 0}, LEFT_ROUTE),
+      right_button(20, 20, Vector2f(40, 490), {0, 0, 0}, RIGHT_ROUTE),
+      up_button(20, 20, Vector2f(10, 520), {0, 0, 0}, UP_ROUTE),
+      down_button(20, 20, Vector2f(40, 520), {0, 0, 0}, DOWN_ROUTE)
 {
 
     if (!this->font.loadFromFile(font_route))
@@ -49,6 +55,24 @@ Grapher::Grapher(int width, int height, std::string tittle, Color backgroundColo
 
     graph_button.setButtonFunction([this]()
                                    { graphFunction(); });
+
+    zoom_in_button.setButtonFunction([this]()
+                                     { zoomInFunction(); });
+
+    zoom_out_button.setButtonFunction([this]()
+                                      { zoomOutFunction(); });
+
+    left_button.setButtonFunction([this]()
+                                  { leftFunction(); });
+
+    right_button.setButtonFunction([this]()
+                                   { rightFunction(); });
+
+    up_button.setButtonFunction([this]()
+                                { upFunction(); });
+
+    down_button.setButtonFunction([this]()
+                                  { downFunction(); });
 }
 
 // Main Loop
@@ -86,6 +110,12 @@ void Grapher::mainLoop()
                 save_button.triggerFunction(mouse_pos);
                 load_button.triggerFunction(mouse_pos);
                 graph_button.triggerFunction(mouse_pos);
+                zoom_in_button.triggerFunction(mouse_pos);
+                zoom_out_button.triggerFunction(mouse_pos);
+                left_button.triggerFunction(mouse_pos);
+                right_button.triggerFunction(mouse_pos);
+                up_button.triggerFunction(mouse_pos);
+                down_button.triggerFunction(mouse_pos);
             }
         }
 
@@ -122,6 +152,12 @@ void Grapher::mainLoop()
         save_button.draw(window);
         load_button.draw(window);
         graph_button.draw(window);
+        zoom_in_button.draw(window);
+        zoom_out_button.draw(window);
+        left_button.draw(window);
+        right_button.draw(window);
+        up_button.draw(window);
+        down_button.draw(window);
 
         window.display();
     }
@@ -211,4 +247,35 @@ void Grapher::graphFunction()
         lineal.drawCircleShape(i, (population[i]), 3, {255, 0, 0});
         logarithm.drawCircleShape(i, log10(population[i]), 3, {255, 0, 0});
     }
+}
+
+
+void Grapher::zoomInFunction()
+{
+    board.zoom(true);
+}
+
+void Grapher::zoomOutFunction()
+{
+    board.zoom(false);
+}
+
+void Grapher::leftFunction()
+{
+    board.moveHorizontal(false);
+}
+
+void Grapher::rightFunction()
+{
+    board.moveHorizontal(true);
+}
+
+void Grapher::upFunction()
+{
+    board.moveVertical(false);
+}
+
+void Grapher::downFunction()
+{
+    board.moveVertical(true);
 }
