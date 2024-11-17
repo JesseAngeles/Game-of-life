@@ -28,13 +28,12 @@ std::vector<std::vector<bool>> FileController::readFile()
     while (std::getline(file, line))
     {
         std::vector<bool> row;
-        std::stringstream lineStream(line);
-        std::string cell;
-
-        // Divide la línea por comas
-        while (std::getline(lineStream, cell, ','))
+        for (char &ch : line)
         {
-            row.push_back((cell == "1") ? true : false);
+            if (ch == 'O')
+                row.push_back(true);
+            else if (ch == '.')
+                row.push_back(false);
         }
         space.push_back(row);
     }
@@ -47,10 +46,10 @@ void FileController::saveFile(std::vector<std::vector<bool>> space)
 {
     const char *filename = tinyfd_saveFileDialog(
         "Guardar archivo",                     // Título del diálogo
-        "./resources/files/nuevo_archivo.csv", // Nombre y ruta inicial
+        "./resources/files/nuevo_archivo.txt", // Nombre y ruta inicial
         1,                                     // Número de filtros de extensión
-        (const char *[]){"*.csv"},             // Extensiones permitidas
-        "Archivo CSV (*.csv)"                  // Descripción de los filtros
+        (const char *[]){"*.txt"},             // Extensiones permitidas
+        "Archivo TXT (*.txt)"                  // Descripción de los filtros
     );
 
     if (!filename)
@@ -70,12 +69,8 @@ void FileController::saveFile(std::vector<std::vector<bool>> space)
     // Itera sobre cada fila del vector y escribe los datos
     for (const auto &row : space)
     {
-        for (size_t i = 0; i < row.size(); ++i)
-        {
-            file << (row[i]) ? "1" : "0";
-            if (i < row.size() - 1)
-                file << ",";
-        }
+        for (bool cell : row)
+            file << (cell ? 'O' : '.');
         file << "\n";
     }
 

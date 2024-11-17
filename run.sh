@@ -1,1 +1,1 @@
-./build/main.exe
+./build/main.exe 300 300
